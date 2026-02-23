@@ -1,0 +1,76 @@
+.topbar {
+    height: var(--topbar-height);
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.left {}
+
+.greeting {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.greeting strong {
+    color: var(--text-primary);
+}
+
+.right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 15px;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.userInfo {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.name {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.role {
+    font-size: 11px;
+    color: var(--primary-light);
+    text-transform: capitalize;
+}
+
+.logoutBtn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    transition: background var(--transition), color var(--transition);
+}
+
+.logoutBtn:hover {
+    background: var(--danger);
+    color: #fff;
+    border-color: var(--danger);
+}

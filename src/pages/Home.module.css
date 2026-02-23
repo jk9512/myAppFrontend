@@ -1,0 +1,621 @@
+/* ═══════════════════════════════════════════════════
+   HOME — LANDING PAGE STYLES
+══════════════════════════════════════════════════════ */
+
+.page {
+    min-height: calc(100vh - 60px);
+    overflow-x: hidden;
+}
+
+/* ── Shared section helpers ───────────────────────── */
+.sectionEyebrow {
+    display: inline-block;
+    background: rgba(99, 102, 241, 0.15);
+    color: var(--primary-light);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 99px;
+    margin-bottom: 14px;
+}
+
+.sectionTitle {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 800;
+    margin: 0 0 12px;
+    line-height: 1.15;
+}
+
+.sectionSub {
+    font-size: 15px;
+    color: var(--text-secondary);
+    max-width: 520px;
+    margin: 0 auto 40px;
+    line-height: 1.7;
+}
+
+.sectionFooter {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.gradient {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* ── HERO ─────────────────────────────────────────── */
+.hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 90vh;
+    padding: 80px 24px;
+    text-align: center;
+    overflow: hidden;
+}
+
+/* animated background blobs */
+.blob1,
+.blob2 {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.18;
+    pointer-events: none;
+    animation: float 8s ease-in-out infinite alternate;
+}
+
+.blob1 {
+    width: 500px;
+    height: 500px;
+    background: var(--primary);
+    top: -100px;
+    left: -150px;
+}
+
+.blob2 {
+    width: 400px;
+    height: 400px;
+    background: var(--secondary);
+    bottom: -80px;
+    right: -120px;
+    animation-delay: -4s;
+}
+
+@keyframes float {
+    from {
+        transform: translate(0, 0) scale(1);
+    }
+
+    to {
+        transform: translate(30px, 20px) scale(1.05);
+    }
+}
+
+.heroContent {
+    max-width: 680px;
+    position: relative;
+    z-index: 1;
+}
+
+.eyebrow {
+    display: inline-block;
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    color: var(--primary-light);
+    border-radius: 99px;
+    padding: 6px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 22px;
+}
+
+.heroTitle {
+    font-size: clamp(2.4rem, 6vw, 4.2rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 20px;
+}
+
+.heroSub {
+    font-size: 17px;
+    color: var(--text-secondary);
+    margin-bottom: 36px;
+    line-height: 1.7;
+}
+
+.heroBtns {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btnPrimary {
+    background: var(--primary);
+    color: #fff;
+    padding: 13px 30px;
+    border-radius: var(--radius);
+    font-weight: 600;
+    font-size: 15px;
+    transition: background 0.2s, transform 0.2s;
+    display: inline-block;
+}
+
+.btnPrimary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+.btnOutline {
+    background: transparent;
+    color: var(--text-primary);
+    padding: 13px 30px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    font-weight: 600;
+    font-size: 15px;
+    transition: background 0.2s, border-color 0.2s;
+    display: inline-block;
+}
+
+.btnOutline:hover {
+    background: var(--bg-hover);
+    border-color: var(--primary);
+}
+
+.btnGhost {
+    background: transparent;
+    color: var(--text-muted);
+    padding: 13px 24px;
+    border-radius: var(--radius);
+    border: 1px dashed var(--border);
+    font-weight: 500;
+    font-size: 14px;
+    transition: color 0.2s;
+    display: inline-block;
+}
+
+.btnGhost:hover {
+    color: var(--primary-light);
+}
+
+/* ── STATS ────────────────────────────────────────── */
+.statsSection {
+    background: var(--bg-surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 40px 24px;
+}
+
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    max-width: 860px;
+    margin: 0 auto;
+    gap: 0;
+}
+
+.statCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    border-right: 1px solid var(--border);
+}
+
+.statCard:last-child {
+    border-right: none;
+}
+
+.statValue {
+    font-size: 2.4rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+    margin-bottom: 6px;
+}
+
+.statLabel {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* ── SKILLS ───────────────────────────────────────── */
+.skillsSection {
+    padding: 80px 24px;
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.skillsGrid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 32px;
+}
+
+.skillChip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    padding: 10px 18px;
+    border-radius: 99px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: border-color 0.2s, color 0.2s, transform 0.2s;
+    cursor: default;
+}
+
+.skillChip:hover {
+    border-color: var(--primary);
+    color: var(--text-primary);
+    transform: translateY(-2px);
+}
+
+.skillIcon {
+    font-size: 18px;
+}
+
+/* ── PORTFOLIO ────────────────────────────────────── */
+.portfolioSection {
+    padding: 80px 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* filter chips */
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 36px;
+}
+
+.filterChip {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    padding: 7px 18px;
+    border-radius: 99px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.filterChip:hover {
+    border-color: var(--primary);
+    color: var(--primary-light);
+}
+
+.chipActive {
+    background: var(--primary) !important;
+    border-color: var(--primary) !important;
+    color: #fff !important;
+}
+
+/* skeleton */
+.loadingRow {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.skeleton {
+    height: 360px;
+    background: linear-gradient(90deg, var(--bg-surface) 25%, var(--border) 50%, var(--bg-surface) 75%);
+    background-size: 200%;
+    border-radius: 20px;
+    animation: shimmer 1.4s infinite;
+}
+
+.skeletonTall {
+    height: 280px;
+}
+
+@keyframes shimmer {
+    from {
+        background-position: 200% 0;
+    }
+
+    to {
+        background-position: -200% 0;
+    }
+}
+
+/* portfolio grid */
+.portGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+    gap: 24px;
+    text-align: left;
+}
+
+.portCard {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.3s;
+    position: relative;
+}
+
+.portCard:hover {
+    border-color: var(--primary);
+}
+
+.portCard::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.portCard:hover::before {
+    opacity: 1;
+}
+
+.portImage {
+    width: 100%;
+    height: 190px;
+    object-fit: cover;
+}
+
+.portPlaceholder {
+    width: 100%;
+    height: 190px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(139, 92, 246, 0.12));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.portPlaceholderIcon {
+    font-size: 52px;
+}
+
+.portBody {
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+}
+
+.portCategory {
+    display: inline-block;
+    background: rgba(99, 102, 241, 0.15);
+    color: var(--primary-light);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 99px;
+    width: fit-content;
+}
+
+.portTitle {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.portDesc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    flex: 1;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.techStack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.techBadge {
+    background: rgba(148, 163, 184, 0.1);
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 99px;
+    border: 1px solid var(--border);
+}
+
+.portLink {
+    color: var(--primary-light);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: gap 0.2s;
+    display: inline-block;
+    margin-top: 4px;
+}
+
+.portLink:hover {
+    text-decoration: underline;
+}
+
+/* ── TESTIMONIALS ─────────────────────────────────── */
+.testimonialSection {
+    padding: 80px 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+    background: radial-gradient(ellipse at 50% 0%, rgba(99, 102, 241, 0.07) 0%, transparent 70%);
+}
+
+.testGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+    text-align: left;
+}
+
+.testCard {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    position: relative;
+    transition: border-color 0.3s;
+}
+
+.testCard:hover {
+    border-color: var(--primary);
+}
+
+.testCard::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    opacity: 0;
+    border-radius: 20px 20px 0 0;
+    transition: opacity 0.3s;
+}
+
+.testCard:hover::before {
+    opacity: 1;
+}
+
+.quoteIcon {
+    font-size: 60px;
+    line-height: 0.5;
+    color: var(--primary);
+    opacity: 0.25;
+    font-family: Georgia, serif;
+    font-weight: 900;
+}
+
+.stars {
+    display: inline-flex;
+    gap: 2px;
+    font-size: 17px;
+}
+
+.testMessage {
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--text-secondary);
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin: 0;
+}
+
+.testAuthor {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+}
+
+.testAvatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.testAvatarImg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.testName {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.testDesig {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+/* ── CTA ──────────────────────────────────────────── */
+.ctaSection {
+    padding: 100px 24px;
+    text-align: center;
+    background: radial-gradient(ellipse at 50% 100%, rgba(99, 102, 241, 0.13) 0%, transparent 60%);
+    border-top: 1px solid var(--border);
+}
+
+.ctaTitle {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 800;
+    margin-bottom: 16px;
+}
+
+.ctaSub {
+    font-size: 16px;
+    color: var(--text-secondary);
+    margin-bottom: 36px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.empty {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 60px 0;
+    font-size: 15px;
+}
