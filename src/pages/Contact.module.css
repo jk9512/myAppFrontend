@@ -255,3 +255,50 @@ a.infoValue:hover {
     font-size: 14px;
     line-height: 1.6;
 }
+
+/* ══ RESPONSIVE ══ */
+@media (max-width: 1024px) {
+    .page {
+        padding: 50px 20px;
+    }
+
+    .layout {
+        grid-template-columns: 1fr 1.4fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .page {
+        padding: 40px 16px;
+    }
+
+    .layout {
+        grid-template-columns: 1fr;
+    }
+
+    .formCard {
+        padding: 24px 18px;
+    }
+
+    .hero {
+        margin-bottom: 36px;
+    }
+
+    .heading {
+        font-size: clamp(1.6rem, 7vw, 2.4rem);
+    }
+}
+
+@media (max-width: 480px) {
+    .page {
+        padding: 30px 12px;
+    }
+
+    .formCard {
+        padding: 20px 14px;
+    }
+
+    .row {
+        grid-template-columns: 1fr;
+    }
+}

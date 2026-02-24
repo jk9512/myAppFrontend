@@ -1,16 +1,67 @@
-# React + Vite
+# Maruti Blinds Management System - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the frontend client for the Maruti Blinds Management System, built with modern web technologies to provide a fast, responsive, and dynamic user interface.
 
-Currently, two official plugins are available:
+## 🚀 Technologies Used
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React 19**
+- **Vite** (Next Generation Frontend Tooling)
+- **React Router DOM** (Declarative Routing)
+- **Tailwind CSS** (Utility-first CSS Framework)
+- **Framer Motion** (Production-ready Animations)
+- **Axios** (Promise based HTTP client)
+- **Vercel Analytics** 
 
-## React Compiler
+## 🎨 Responsive Design & UI/UX
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+The frontend is built with a **Mobile-First** approach ensuring a seamless experience across all device sizes. We utilize Tailwind CSS's utility classes to manage breakpoints contextually:
 
-## Expanding the ESLint configuration
+- **Mobile First**: All baseline styles are targeted at mobile screens.
+- **Tablet (`sm:` & `md:`)**: Adjusted padding, font sizing, and multi-column grid layouts for mid-sized screens.
+- **Desktop (`lg:` & `xl:`)**: Expanded navigation, larger imagery, and sophisticated dense grid structures tailored to larger real estate.
+- **Dark/Light Mode**: Full support for CSS user preference media queries, providing high-contrast dark mode interfaces where applicable.
+- **Micro-Animations**: Uses Framer Motion for subtle entry scale, fade-in animations on scroll, and soft hovering states that enhance the feel without impacting performance.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 📂 Project Structure
+
+- `src/components`: Reusable UI components
+- `src/pages`: Main application views (Home, Portfolio, etc.)
+- `src/layout`: Application layouts (MainLayout, Sidebar, Header, etc.)
+- `src/context` or `src/store`: State management (Redux/Context API)
+- `src/assets`: Images, icons, and global styles
+- `public`: Static assets
+
+## ⚙️ Environment Variables
+
+Create a `.env` file in the root of the `client` directory and configure the following:
+
+```env
+# The base URL of your backend server API
+VITE_API_BASE_URL=http://localhost:5000/api
+```
+
+## 🛠️ Scripts & Usage
+
+In the project directory, you can run:
+
+### `npm install`
+Installs all required dependencies.
+
+### `npm run dev`
+Runs the app in the development mode.
+Open [http://localhost:5173](http://localhost:5173) to view it in your browser.
+The page will reload when you make changes.
+
+### `npm run build`
+Builds the app for production to the `dist` folder.
+It correctly bundles React in production mode and optimizes the build for the best performance.
+
+### `npm run lint`
+Runs ESLint to find and fix problems in the JavaScript code.
+
+### `npm run preview`
+Boot up a local static web server that serves the files from `dist` to preview the production build locally.
+
+## 🚀 Deployment
+
+The frontend is optimized and ready to be deployed on **Vercel**. Simply connect the repository to Vercel and set the build command to `npm run build` and the output directory to `dist`. Ensure to set the required Environment Variables in the Vercel dashboard.

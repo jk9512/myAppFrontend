@@ -619,3 +619,168 @@
     padding: 60px 0;
     font-size: 15px;
 }
+
+/* ══════════════════════════════════════════════════
+   RESPONSIVE DESIGN
+══════════════════════════════════════════════════ */
+
+/* ── Laptop / large tablet (max 1024px) ─── */
+@media (max-width: 1024px) {
+    .hero {
+        padding: 70px 24px;
+    }
+
+    .portfolioSection,
+    .skillsSection,
+    .testimonialSection {
+        padding: 60px 24px;
+    }
+
+    .statsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .statCard {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .statCard:last-child {
+        border-bottom: none;
+    }
+
+    .portGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .testGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ── Tablet / large mobile (max 768px) ─── */
+@media (max-width: 768px) {
+    .hero {
+        padding: 60px 16px;
+        min-height: 80vh;
+    }
+
+    .heroTitle {
+        font-size: clamp(1.9rem, 9vw, 2.8rem);
+    }
+
+    .heroSub {
+        font-size: 15px;
+    }
+
+    .heroBtns {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btnPrimary,
+    .btnOutline,
+    .btnGhost {
+        width: 100%;
+        text-align: center;
+        max-width: 320px;
+    }
+
+    .blob1 {
+        width: 280px;
+        height: 280px;
+    }
+
+    .blob2 {
+        width: 200px;
+        height: 200px;
+    }
+
+    .statsSection {
+        padding: 30px 16px;
+    }
+
+    .statsGrid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .skillsSection,
+    .portfolioSection,
+    .testimonialSection {
+        padding: 50px 16px;
+    }
+
+    .sectionTitle {
+        font-size: clamp(1.5rem, 5vw, 2rem);
+    }
+
+    .skillsGrid {
+        gap: 8px;
+    }
+
+    .skillChip {
+        padding: 8px 14px;
+        font-size: 13px;
+    }
+
+    .filters {
+        justify-content: flex-start;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 8px;
+        flex-wrap: nowrap;
+    }
+
+    .filterChip {
+        flex-shrink: 0;
+    }
+
+    .portGrid,
+    .testGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .ctaSection {
+        padding: 60px 16px;
+    }
+
+    .ctaTitle {
+        font-size: clamp(1.5rem, 6vw, 2.2rem);
+    }
+}
+
+/* ── Small phone (max 480px) ─── */
+@media (max-width: 480px) {
+    .hero {
+        min-height: 70vh;
+        padding: 50px 12px;
+    }
+
+    .heroTitle {
+        font-size: clamp(1.6rem, 10vw, 2.2rem);
+    }
+
+    .eyebrow {
+        font-size: 11px;
+        padding: 5px 14px;
+    }
+
+    .statsGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .statValue {
+        font-size: 1.9rem;
+    }
+
+    .portGrid,
+    .testGrid,
+    .loadingRow {
+        grid-template-columns: 1fr;
+    }
+
+    .ctaSection {
+        padding: 40px 12px;
+    }
+}

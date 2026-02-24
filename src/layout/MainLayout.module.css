@@ -23,6 +23,7 @@
     background: linear-gradient(135deg, var(--primary), var(--secondary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    flex-shrink: 0;
 }
 
 .navRight {
@@ -36,6 +37,7 @@
     color: var(--text-secondary);
     font-weight: 500;
     transition: color var(--transition);
+    white-space: nowrap;
 }
 
 .navLink:hover {
@@ -49,7 +51,9 @@
     padding: 6px 14px;
     border-radius: 8px;
     font-size: 13px;
+    cursor: pointer;
     transition: background var(--transition), color var(--transition);
+    white-space: nowrap;
 }
 
 .logoutBtn:hover {
@@ -60,4 +64,129 @@
 
 .main {
     flex: 1;
+}
+
+/* ── hamburger (mobile only) ─── */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+}
+
+.hamburger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--text-secondary);
+    border-radius: 2px;
+    transition: all 0.3s;
+}
+
+/* ── mobile drawer overlay ─── */
+.mobileDrawer {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(2px);
+}
+
+.mobileDrawerInner {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 240px;
+    height: 100%;
+    background: var(--bg-surface);
+    border-left: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 24px 20px;
+    gap: 4px;
+}
+
+.mobileClose {
+    align-self: flex-end;
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    margin-bottom: 12px;
+}
+
+.mobileNavLink {
+    font-size: 15px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    padding: 10px 8px;
+    border-radius: 8px;
+    transition: background var(--transition), color var(--transition);
+    display: block;
+    text-decoration: none;
+}
+
+.mobileNavLink:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.mobileLogoutBtn {
+    margin-top: 12px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: left;
+    font-weight: 500;
+    transition: background var(--transition), color var(--transition);
+}
+
+.mobileLogoutBtn:hover {
+    background: var(--danger);
+    color: #fff;
+    border-color: var(--danger);
+}
+
+.mobileDrawerOpen {
+    display: block;
+}
+
+/* ── RESPONSIVE ─────────────────────────────────────── */
+@media (max-width: 1024px) {
+    .navLink {
+        font-size: 13px;
+    }
+
+    .navRight {
+        gap: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        padding: 0 16px;
+        height: 60px;
+    }
+
+    .brand {
+        font-size: 16px;
+    }
+
+    /* hide desktop nav links, show hamburger */
+    .navRight .navLink {
+        display: none;
+    }
+
+    .hamburger {
+        display: flex;
+    }
 }

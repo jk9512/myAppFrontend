@@ -8,6 +8,8 @@
     flex-shrink: 0;
     position: sticky;
     top: 0;
+    z-index: 100;
+    transition: width 0.3s;
 }
 
 .logo {
@@ -25,6 +27,7 @@
     font-weight: 800;
     background: linear-gradient(135deg, var(--primary), var(--secondary));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     white-space: nowrap;
 }
@@ -38,6 +41,7 @@
     font-size: 11px;
     flex-shrink: 0;
     transition: background var(--transition);
+    cursor: pointer;
 }
 
 .collapseBtn:hover {
@@ -49,6 +53,8 @@
     flex-direction: column;
     padding: 12px 8px;
     gap: 4px;
+    overflow-y: auto;
+    flex: 1;
 }
 
 .navItem {
@@ -63,6 +69,7 @@
     transition: background var(--transition), color var(--transition);
     white-space: nowrap;
     overflow: hidden;
+    text-decoration: none;
 }
 
 .navItem:hover {
@@ -82,4 +89,36 @@
 
 .navLabel {
     overflow: hidden;
+}
+
+/* ── RESPONSIVE ─────────────────────────────── */
+@media (max-width: 768px) {
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 200;
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5);
+        /* starts collapsed on mobile */
+    }
+
+    .collapseBtn {
+        display: flex;
+    }
+
+    .navItem {
+        padding: 12px 14px;
+        font-size: 15px;
+    }
+
+    .icon {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .logoText {
+        font-size: 15px;
+    }
 }
