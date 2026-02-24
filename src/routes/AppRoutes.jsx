@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import usePageTracking from "../hooks/usePageTracking";
 import MainLayout from "../layout/MainLayout";
 import AdminLayout from "../layout/AdminLayout";
 import Home from "../pages/Home";
@@ -14,6 +15,10 @@ import ContactsPage from "../pages/admin/ContactsPage";
 import Testimonials from "../pages/Testimonials";
 import Portfolio from "../pages/Portfolio";
 import Contact from "../pages/Contact";
+import Blogs from "../pages/Blogs";
+import BlogDetail from "../pages/BlogDetail";
+import BlogsPage from "../pages/admin/BlogsPage";
+import Chat from "../pages/Chat";
 
 // Guard: must be logged in
 const ProtectedRoute = ({ children }) => {
@@ -29,8 +34,10 @@ const AdminRoute = ({ children }) => {
     return children;
 };
 
-const AppRoutes = () => (
-    <BrowserRouter>
+// Inner component so hooks can access router context
+const TrackedRoutes = () => {
+    usePageTracking();
+    return (
         <Routes>
             {/* Public routes */}
             <Route element={<MainLayout />}>
@@ -39,6 +46,9 @@ const AppRoutes = () => (
                 <Route path="/testimonials" element={<Testimonials />} />
                 <Route path="/portfolio" element={<Portfolio />} />
                 <Route path="/contact" element={<Contact />} />
+                <Route path="/blogs" element={<Blogs />} />
+                <Route path="/blogs/:id" element={<BlogDetail />} />
+                <Route path="/chat" element={<Chat />} />
                 <Route path="/" element={
                     <ProtectedRoute><Home /></ProtectedRoute>
                 } />
@@ -55,11 +65,18 @@ const AppRoutes = () => (
                 <Route path="testimonials" element={<TestimonialsPage />} />
                 <Route path="portfolio" element={<PortfolioPage />} />
                 <Route path="contacts" element={<ContactsPage />} />
+                <Route path="blogs" element={<BlogsPage />} />
             </Route>
 
             {/* Fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+    );
+};
+
+const AppRoutes = () => (
+    <BrowserRouter>
+        <TrackedRoutes />
     </BrowserRouter>
 );
 

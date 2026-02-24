@@ -10,6 +10,7 @@ const navItems = [
     { to: "/admin/testimonials", label: "Testimonials", icon: "⭐" },
     { to: "/admin/portfolio", label: "Portfolio", icon: "💼" },
     { to: "/admin/contacts", label: "Contacts", icon: "📬" },
+    { to: "/admin/blogs", label: "Blogs", icon: "✍️" },
 ];
 
 const Sidebar = ({ collapsed, onCollapse }) => {

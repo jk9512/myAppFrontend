@@ -22,6 +22,8 @@ const MainLayout = () => {
                 <div className={styles.navRight}>
                     <Link to="/testimonials" className={styles.navLink}>Testimonials</Link>
                     <Link to="/portfolio" className={styles.navLink}>Portfolio</Link>
+                    <Link to="/blogs" className={styles.navLink}>Blog</Link>
+                    <Link to="/chat" className={styles.navLink}>💬 Chat</Link>
                     <Link to="/contact" className={styles.navLink}>Contact</Link>
                     {user ? (
                         <>
@@ -61,6 +63,8 @@ const MainLayout = () => {
                         <Link to="/" className={styles.mobileNavLink} onClick={() => setDrawerOpen(false)}>Home</Link>
                         <Link to="/testimonials" className={styles.mobileNavLink} onClick={() => setDrawerOpen(false)}>Testimonials</Link>
                         <Link to="/portfolio" className={styles.mobileNavLink} onClick={() => setDrawerOpen(false)}>Portfolio</Link>
+                        <Link to="/blogs" className={styles.mobileNavLink} onClick={() => setDrawerOpen(false)}>Blog</Link>
+                        <Link to="/chat" className={styles.mobileNavLink} onClick={() => setDrawerOpen(false)}>💬 Chat</Link>
                         <Link to="/contact" className={styles.mobileNavLink} onClick={() => setDrawerOpen(false)}>Contact</Link>
                         {user ? (
                             <>

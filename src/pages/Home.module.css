@@ -590,7 +590,357 @@
     margin-top: 2px;
 }
 
-/* ── CTA ──────────────────────────────────────────── */
+/* ── BLOG ────────────────────────────────────────── */
+.blogSection {
+    padding: 80px 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.blogGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+    gap: 24px;
+    text-align: left;
+}
+
+.blogCard {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.3s;
+    position: relative;
+}
+
+.blogCard:hover {
+    border-color: var(--primary);
+}
+
+.blogCard::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.blogCard:hover::before {
+    opacity: 1;
+}
+
+.blogImage {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.blogPlaceholder {
+    width: 100%;
+    height: 180px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.blogPlaceholderIcon {
+    font-size: 48px;
+}
+
+.blogBody {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+}
+
+.blogMeta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.blogReadTime {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* ── CONTACT SECTION ────────────────────────────── */
+.contactSection {
+    padding: 80px 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+    border-top: 1px solid var(--border);
+}
+
+.contactLayout {
+    display: grid;
+    grid-template-columns: 1fr 1.6fr;
+    gap: 32px;
+    align-items: start;
+}
+
+/* Info side */
+.contactInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.contactCard {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 18px;
+    transition: border-color 0.25s, transform 0.25s;
+}
+
+.contactCard:hover {
+    border-color: var(--primary);
+    transform: translateX(4px);
+}
+
+.contactIcon {
+    font-size: 20px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.contactLabel {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-bottom: 3px;
+}
+
+.contactValue {
+    font-size: 14px;
+    color: var(--text-primary);
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+a.contactValue:hover {
+    color: var(--primary-light);
+}
+
+.contactAvail {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-muted);
+    padding: 8px 0 0;
+}
+
+.availDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 8px #22c55e;
+    flex-shrink: 0;
+    animation: availPulse 2s ease-in-out infinite;
+}
+
+@keyframes availPulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 6px #22c55e;
+    }
+
+    50% {
+        box-shadow: 0 0 16px #22c55e;
+    }
+}
+
+/* Form card */
+.contactFormCard {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+}
+
+.contactFormTitle {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 22px;
+    color: var(--text-primary);
+}
+
+.contactForm {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.contactRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.contactSelectWrap {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+}
+
+.contactSelectLabel {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.contactSelect,
+.contactTextarea {
+    background: var(--bg-hover);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text-primary);
+    font-size: 14px;
+    font-family: inherit;
+    padding: 10px 12px;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.contactSelect:focus,
+.contactTextarea:focus {
+    border-color: var(--primary);
+}
+
+.contactSelectError {
+    border-color: var(--danger) !important;
+}
+
+.contactTextareaWrap {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.contactTextarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.contactErrMsg {
+    font-size: 12px;
+    color: var(--danger);
+}
+
+.contactApiError {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+}
+
+/* Locked email field */
+.contactEmailLocked {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-hover);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    cursor: not-allowed;
+    opacity: 0.85;
+    min-height: 42px;
+}
+
+.contactEmailIcon {
+    font-size: 15px;
+    flex-shrink: 0;
+}
+
+.contactEmailBadge {
+    margin-left: auto;
+    font-size: 10px;
+    font-weight: 700;
+    background: rgba(99, 102, 241, 0.15);
+    color: var(--primary-light);
+    padding: 2px 8px;
+    border-radius: 99px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.contactSuccess {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+    padding: 24px 0;
+}
+
+.contactSuccess h3 {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.contactSuccess p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* Responsive contact */
+@media (max-width: 900px) {
+    .contactLayout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .contactSection {
+        padding: 60px 16px;
+    }
+
+    .contactRow {
+        grid-template-columns: 1fr;
+    }
+
+    .contactFormCard {
+        padding: 22px 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .contactSection {
+        padding: 40px 12px;
+    }
+}
+
+/* ── CTA (kept for reference) ────────────────────── */
 .ctaSection {
     padding: 100px 24px;
     text-align: center;
