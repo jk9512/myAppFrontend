@@ -18,12 +18,16 @@
 }
 
 .brand {
-    font-size: 18px;
-    font-weight: 800;
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    display: flex;
+    align-items: center;
     flex-shrink: 0;
+    text-decoration: none;
+}
+
+.brandLogo {
+    height: 42px;
+    width: auto;
+    display: block;
 }
 
 .navRight {
@@ -60,6 +64,76 @@
     background: var(--danger);
     color: #fff;
     border-color: var(--danger);
+}
+
+/* ── Avatar button in navbar ─── */
+.avatarBtn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 10px;
+    transition: background var(--transition);
+}
+
+.avatarBtn:hover {
+    background: var(--bg-hover);
+}
+
+.avatarName {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+}
+
+/* ── My Profile in mobile drawer ─── */
+.mobileProfileBtn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    padding: 10px 8px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    font-family: inherit;
+    transition: background var(--transition), color var(--transition);
+    width: 100%;
+}
+
+.mobileProfileBtn:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+/* ── Theme Toggle ─── */
+.themeToggle {
+    background: var(--bg-hover);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    cursor: pointer;
+    transition: background var(--transition), transform 0.3s ease, box-shadow 0.2s;
+    flex-shrink: 0;
+}
+
+.themeToggle:hover {
+    background: var(--bg-surface);
+    transform: rotate(20deg) scale(1.1);
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
 }
 
 .main {

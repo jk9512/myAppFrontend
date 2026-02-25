@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import Logo from "../assets/Logo.png";
 import { motion } from "framer-motion";
 import styles from "./Footer.module.css";
 
@@ -30,10 +31,12 @@ const Footer = () => (
 
             {/* ── Brand ──────────────────────────────────── */}
             <div className={styles.col}>
-                <Link to="/" className={styles.brand}>⚡ AdminPro</Link>
+                <Link to="/" className={styles.brand}>
+                    <img src={Logo} alt="Sankalp Infotech" className={styles.footerLogo} />
+                </Link>
                 <p className={styles.brandDesc}>
-                    Full-stack developer building fast, scalable and beautiful
-                    web applications. Open to freelance &amp; full-time roles.
+                    Sankalp Infotech delivers innovative, scalable, and beautiful
+                    web &amp; software solutions. Let's build something great together.
                 </p>
                 <div className={styles.socials}>
                     {socialLinks.map(s => (
@@ -103,7 +106,7 @@ const Footer = () => (
 
         {/* ── Bottom bar ─────────────────────────────────── */}
         <div className={styles.bottomBar}>
-            <span className={styles.copy}>© {currentYear} AdminPro. All rights reserved.</span>
+            <span className={styles.copy}>© {currentYear} Sankalp Infotech. All rights reserved.</span>
             <div className={styles.bottomLinks}>
                 <a href="#" className={styles.bottomLink}>Privacy Policy</a>
                 <a href="#" className={styles.bottomLink}>Terms of Service</a>

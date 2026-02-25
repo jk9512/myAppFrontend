@@ -2,7 +2,7 @@
 .page {
     display: flex;
     flex-direction: column;
-    height: 72vh;
+    height: 93vh;
     min-height: 520px;
     max-width: 1100px;
     margin: 0 auto;
@@ -41,11 +41,130 @@
     border: 1px solid var(--border);
 }
 
-/* ── Shared chat panel (group) ───────────────────────── */
-.chatPanel {
+/* ── Group chat two-column layout (mirrors dmLayout) ─ */
+.groupLayout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    flex: 1;
+    min-height: 0;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    margin-top: 12px;
+    overflow: hidden;
+}
+
+/* ── Group sidebar (left) ────────────────────────────── */
+.groupSidebar {
     display: flex;
     flex-direction: column;
+    border-right: 1px solid var(--border);
+    background: var(--bg-surface);
+    min-height: 0;
+    overflow: hidden;
+}
+
+.groupSidebarBody {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    overflow-y: auto;
     flex: 1;
+}
+
+.groupRoomCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    background: rgba(99, 102, 241, 0.06);
+    border: 1px solid rgba(99, 102, 241, 0.18);
+    border-radius: 14px;
+    padding: 20px 16px;
+    text-align: center;
+}
+
+.groupRoomIcon {
+    font-size: 2rem;
+    width: 54px;
+    height: 54px;
+    border-radius: 14px;
+    background: rgba(99, 102, 241, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.groupRoomName {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.groupRoomDesc {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.groupOnlineBox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-hover);
+    border-radius: 10px;
+    padding: 10px 14px;
+}
+
+.groupOnlineDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 8px #22c55e;
+    animation: pulse 2s ease-in-out infinite;
+    flex-shrink: 0;
+}
+
+.groupOnlineText {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.groupTips {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px 14px;
+    background: var(--bg-hover);
+    border-radius: 10px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.groupTipTitle {
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+
+.kbd {
+    display: inline-block;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 11px;
+    font-family: monospace;
+    color: var(--text-primary);
+}
+
+/* ── Group right chat panel ──────────────────────────── */
+.groupChat {
+    display: flex;
+    flex-direction: column;
     min-height: 0;
 }
 
@@ -60,6 +179,7 @@
     margin-top: 12px;
     overflow: hidden;
 }
+
 
 /* ── Conversations list ──────────────────────────────── */
 .convList {
@@ -86,18 +206,87 @@
     color: var(--text-primary);
 }
 
-.newDMBtn {
-    background: none;
-    border: none;
-    font-size: 18px;
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 8px;
-    transition: background 0.2s;
+/* Persistent search bar in DM sidebar */
+.dmSearchWrap {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
 }
 
-.newDMBtn:hover {
+.dmSearchInput {
+    width: 100%;
     background: var(--bg-hover);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 13px;
+    padding: 8px 12px;
+    outline: none;
+    box-sizing: border-box;
+    font-family: inherit;
+    transition: border-color 0.2s;
+}
+
+.dmSearchInput:focus {
+    border-color: var(--primary);
+}
+
+/* Sub-tabs: People / Chats */
+.dmSubTabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.dmSubTab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    padding: 9px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.2s, background 0.2s;
+    font-family: inherit;
+    border-bottom: 2px solid transparent;
+}
+
+.dmSubTab:hover {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+}
+
+.dmSubTabActive {
+    color: var(--primary-light);
+    border-bottom-color: var(--primary);
+}
+
+.dmSubCount {
+    background: var(--primary);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 99px;
+    min-width: 18px;
+    text-align: center;
+}
+
+/* Admin role tag shown on People list items */
+.roleTag {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 99px;
+    background: rgba(99, 102, 241, 0.15);
+    color: var(--primary-light);
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
 /* User search dropdown */
@@ -598,6 +787,14 @@
     .page {
         height: calc(100vh - 110px);
         padding: 0 8px 8px;
+    }
+
+    .groupLayout {
+        grid-template-columns: 1fr;
+    }
+
+    .groupSidebar {
+        display: none;
     }
 
     .dmLayout {

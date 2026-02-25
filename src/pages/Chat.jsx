@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import PageWrapper from "../components/common/PageWrapper";
 import api from "../api/axios";
 import styles from "./Chat.module.css";
+import AvatarImg from "../components/common/AvatarImg";
 
 const ROOM = "general";
 const SERVER_URL = import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5000";
@@ -62,46 +63,73 @@ const GroupChat = ({ socketRef, connected, online, user }) => {
     };
 
     return (
-        <div className={styles.chatPanel}>
-            <div className={styles.chatHeader}>
-                <span className={styles.chatHeaderIcon}>🌐</span>
-                <div>
-                    <div className={styles.chatHeaderName}>General Chat</div>
-                    <div className={styles.chatHeaderSub}>{online} online</div>
+        <div className={styles.groupLayout}>
+            {/* ── Left: Room info sidebar ── */}
+            <div className={styles.groupSidebar}>
+                <div className={styles.convListHeader}>
+                    <span className={styles.convListTitle}>🌐 General</span>
+                    <span className={`${styles.statusDot} ${connected ? styles.online : styles.offline}`} />
                 </div>
-                <span className={`${styles.statusDot} ${connected ? styles.online : styles.offline}`} />
+                <div className={styles.groupSidebarBody}>
+                    <div className={styles.groupRoomCard}>
+                        <div className={styles.groupRoomIcon}>🌐</div>
+                        <div className={styles.groupRoomName}>General Chat</div>
+                        <div className={styles.groupRoomDesc}>A public room for everyone. Be respectful!</div>
+                    </div>
+                    <div className={styles.groupOnlineBox}>
+                        <span className={styles.groupOnlineDot} />
+                        <span className={styles.groupOnlineText}>{online} online right now</span>
+                    </div>
+                    <div className={styles.groupTips}>
+                        <p className={styles.groupTipTitle}>💡 Tips</p>
+                        <p>Press <kbd className={styles.kbd}>Enter</kbd> to send</p>
+                        <p>Press <kbd className={styles.kbd}>Shift+Enter</kbd> for new line</p>
+                    </div>
+                </div>
             </div>
 
-            <div className={styles.messages}>
-                {loading ? <Spinner /> : messages.length === 0 ? <EmptyChat /> : (
-                    <AnimatePresence initial={false}>
-                        {messages.map((msg, idx) => {
-                            const isMe = user && (msg.sender?.userId === (user._id || user.id) || msg.sender?.name === user.name);
-                            const showAvatar = idx === 0 || messages[idx - 1]?.sender?.name !== msg.sender?.name;
-                            return <MsgBubble key={msg._id || idx} msg={msg} isMe={isMe} showInfo={showAvatar} />;
-                        })}
-                    </AnimatePresence>
+            {/* ── Right: Chat ── */}
+            <div className={styles.groupChat}>
+                <div className={styles.chatHeader}>
+                    <div className={styles.chatHeaderIcon}>🌐</div>
+                    <div>
+                        <div className={styles.chatHeaderName}>General Chat</div>
+                        <div className={styles.chatHeaderSub}>{online} member{online !== 1 ? "s" : ""} online</div>
+                    </div>
+                    <span className={`${styles.statusDot} ${connected ? styles.online : styles.offline}`} style={{ marginLeft: "auto" }} />
+                </div>
+
+                <div className={styles.messages}>
+                    {loading ? <Spinner /> : messages.length === 0 ? <EmptyChat /> : (
+                        <AnimatePresence initial={false}>
+                            {messages.map((msg, idx) => {
+                                const isMe = user && (msg.sender?.userId === (user._id || user.id) || msg.sender?.name === user.name);
+                                const showAvatar = idx === 0 || messages[idx - 1]?.sender?.name !== msg.sender?.name;
+                                return <MsgBubble key={msg._id || idx} msg={msg} isMe={isMe} showInfo={showAvatar} />;
+                            })}
+                        </AnimatePresence>
+                    )}
+                    <div ref={bottomRef} />
+                </div>
+
+                {user ? (
+                    <form className={styles.inputBar} onSubmit={handleSend}>
+                        <AvatarImg userId={user?._id} name={user?.name} hasAvatar={user?.hasAvatar} size={34} />
+                        <textarea
+                            className={styles.input}
+                            placeholder="Type a message… (Enter to send)"
+                            value={text}
+                            onChange={e => setText(e.target.value)}
+                            onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) handleSend(e); }}
+                            rows={1}
+                            maxLength={1000}
+                        />
+                        <button type="submit" className={styles.sendBtn} disabled={!text.trim() || !connected}>➤</button>
+                    </form>
+                ) : (
+                    <GuestBar />
                 )}
-                <div ref={bottomRef} />
             </div>
-
-            {user ? (
-                <form className={styles.inputBar} onSubmit={handleSend}>
-                    <div className={styles.inputAvatar}>{user?.name?.charAt(0).toUpperCase()}</div>
-                    <textarea
-                        className={styles.input}
-                        placeholder="Type a message… (Enter to send)"
-                        value={text}
-                        onChange={e => setText(e.target.value)}
-                        onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) handleSend(e); }}
-                        rows={1}
-                        maxLength={1000}
-                    />
-                    <button type="submit" className={styles.sendBtn} disabled={!text.trim() || !connected}>➤</button>
-                </form>
-            ) : (
-                <GuestBar />
-            )}
         </div>
     );
 };
@@ -111,13 +139,14 @@ const GroupChat = ({ socketRef, connected, online, user }) => {
 /* ─────────────────────────────────────────────────────────────────────────── */
 const DMPanel = ({ socketRef, connected, user }) => {
     const [conversations, setConversations] = useState([]);
-    const [activeConv, setActiveConv] = useState(null); // { conversationId, otherUser: {userId, name} }
+    const [activeConv, setActiveConv] = useState(null);
     const [messages, setMessages] = useState([]);
     const [text, setText] = useState("");
     const [users, setUsers] = useState([]);
     const [search, setSearch] = useState("");
-    const [showUserList, setShowUserList] = useState(false);
+    const [sideTab, setSideTab] = useState("people"); // "chats" | "people"
     const [convLoading, setConvLoading] = useState(true);
+    const [usersLoading, setUsersLoading] = useState(true);
     const [msgLoading, setMsgLoading] = useState(false);
     const bottomRef = useRef(null);
 
@@ -132,24 +161,24 @@ const DMPanel = ({ socketRef, connected, user }) => {
         finally { setConvLoading(false); }
     }, []);
 
-    useEffect(() => { if (user) loadConversations(); }, [user, loadConversations]);
-
-    // Load users for new DM
+    // Load ALL users on mount (always visible)
     useEffect(() => {
-        if (showUserList && users.length === 0) {
-            api.get("/users").then(({ data }) => {
+        if (!user) return;
+        loadConversations();
+        api.get("/users")
+            .then(({ data }) => {
                 const list = (data.users || []).filter(u => (u._id || u.id) !== myId);
                 setUsers(list);
-            }).catch(() => { });
-        }
-    }, [showUserList, myId, users.length]);
+            })
+            .catch(() => { })
+            .finally(() => setUsersLoading(false));
+    }, [user, myId, loadConversations]);
 
     // Join DM room and listen for messages
     useEffect(() => {
         const socket = socketRef.current;
         if (!socket || !activeConv) return;
         socket.emit("dm-join", activeConv.conversationId);
-
         const handler = (msg) => {
             if (msg.conversationId === activeConv.conversationId) {
                 setMessages(prev => [...prev, msg]);
@@ -159,7 +188,7 @@ const DMPanel = ({ socketRef, connected, user }) => {
         return () => socket.off("dm-message", handler);
     }, [socketRef, activeConv, connected]);
 
-    // Listen for DM notifications (for updating conversation list)
+    // Listen for DM notifications
     useEffect(() => {
         const socket = socketRef.current;
         if (!socket) return;
@@ -188,9 +217,7 @@ const DMPanel = ({ socketRef, connected, user }) => {
     const startNewDM = (otherUser) => {
         const otherId = otherUser._id || otherUser.id;
         const convId = makeConvId(myId, otherId);
-        setShowUserList(false);
-        setSearch("");
-        openConversation(convId, { userId: otherId, name: otherUser.name });
+        openConversation(convId, { userId: otherId, name: otherUser.name, role: otherUser.role });
     };
 
     const handleSend = (e) => {
@@ -202,105 +229,135 @@ const DMPanel = ({ socketRef, connected, user }) => {
             text: text.trim(),
         });
         setText("");
-        // Refresh conversation list after sending
         setTimeout(loadConversations, 500);
     };
 
+    const q = search.toLowerCase();
     const filteredUsers = users.filter(u =>
-        u.name?.toLowerCase().includes(search.toLowerCase()) ||
-        u.email?.toLowerCase().includes(search.toLowerCase())
+        u.name?.toLowerCase().includes(q) || u.email?.toLowerCase().includes(q)
     );
+    const filteredConvs = conversations.filter(conv => {
+        const other = conv.lastMessage.from.userId === myId
+            ? conv.lastMessage.to
+            : conv.lastMessage.from;
+        return other.name?.toLowerCase().includes(q);
+    });
 
-    if (!user) return <div className={styles.chatPanel}><GuestBar /></div>;
+    if (!user) return <div className={styles.dmLayout}><div className={styles.dmChat}><GuestBar /></div></div>;
 
     return (
         <div className={styles.dmLayout}>
-            {/* Left: Conversations list */}
+            {/* ── Left sidebar ── */}
             <div className={styles.convList}>
+                {/* Search */}
                 <div className={styles.convListHeader}>
-                    <span className={styles.convListTitle}>Messages</span>
-                    <button className={styles.newDMBtn} onClick={() => setShowUserList(s => !s)} title="New Message">
-                        ✏️
+                    <span className={styles.convListTitle}>Direct Messages</span>
+                </div>
+                <div className={styles.dmSearchWrap}>
+                    <input
+                        className={styles.dmSearchInput}
+                        placeholder="🔍 Search people or chats…"
+                        value={search}
+                        onChange={e => setSearch(e.target.value)}
+                    />
+                </div>
+
+                {/* Sub-tabs */}
+                <div className={styles.dmSubTabs}>
+                    <button
+                        className={`${styles.dmSubTab} ${sideTab === "people" ? styles.dmSubTabActive : ""}`}
+                        onClick={() => setSideTab("people")}
+                    >
+                        👥 People
+                        {users.length > 0 && <span className={styles.dmSubCount}>{users.length}</span>}
+                    </button>
+                    <button
+                        className={`${styles.dmSubTab} ${sideTab === "chats" ? styles.dmSubTabActive : ""}`}
+                        onClick={() => setSideTab("chats")}
+                    >
+                        💬 Chats
+                        {conversations.length > 0 && <span className={styles.dmSubCount}>{conversations.length}</span>}
                     </button>
                 </div>
 
-                {/* User search for new DM */}
-                <AnimatePresence>
-                    {showUserList && (
-                        <motion.div
-                            className={styles.userSearch}
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                        >
-                            <input
-                                className={styles.searchInput}
-                                placeholder="🔍 Search people…"
-                                value={search}
-                                onChange={e => setSearch(e.target.value)}
-                                autoFocus
-                            />
-                            <div className={styles.userList}>
-                                {filteredUsers.length === 0 ? (
-                                    <div className={styles.noUsers}>No users found</div>
-                                ) : filteredUsers.map(u => (
-                                    <div key={u._id || u.id} className={styles.userItem} onClick={() => startNewDM(u)}>
-                                        <div className={styles.convAvatar}>{u.name?.charAt(0).toUpperCase()}</div>
-                                        <div>
-                                            <div className={styles.convName}>{u.name}</div>
-                                            <div className={styles.convLast}>{u.email}</div>
-                                        </div>
-                                    </div>
-                                ))}
+                {/* ── People tab ── */}
+                {sideTab === "people" && (
+                    <div className={styles.convItems}>
+                        {usersLoading ? (
+                            [1, 2, 3, 4].map(i => <div key={i} className={styles.convSkeleton} />)
+                        ) : filteredUsers.length === 0 ? (
+                            <div className={styles.noConvs}>
+                                <span>No users found</span>
                             </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-
-                {/* Conversation items */}
-                <div className={styles.convItems}>
-                    {convLoading ? (
-                        [1, 2, 3].map(i => <div key={i} className={styles.convSkeleton} />)
-                    ) : conversations.length === 0 ? (
-                        <div className={styles.noConvs}>
-                            <span>No conversations yet</span>
-                            <span className={styles.noConvSub}>Click ✏️ to start a DM</span>
-                        </div>
-                    ) : (
-                        conversations.map(conv => {
-                            const other = conv.lastMessage.from.userId === myId
-                                ? conv.lastMessage.to
-                                : conv.lastMessage.from;
-                            const isActive = activeConv?.conversationId === conv._id;
+                        ) : filteredUsers.map(u => {
+                            const uid = u._id || u.id;
+                            const convId = makeConvId(myId, uid);
+                            const isActive = activeConv?.conversationId === convId;
                             return (
                                 <div
-                                    key={conv._id}
+                                    key={uid}
                                     className={`${styles.convItem} ${isActive ? styles.convItemActive : ""}`}
-                                    onClick={() => openConversation(conv._id, other)}
+                                    onClick={() => startNewDM(u)}
                                 >
-                                    <div className={styles.convAvatar}>{other.name?.charAt(0).toUpperCase()}</div>
+                                    <AvatarImg userId={uid} name={u.name} hasAvatar={u.hasAvatar} size={36} />
                                     <div className={styles.convBody}>
-                                        <div className={styles.convName}>{other.name}</div>
-                                        <div className={styles.convLast}>{conv.lastMessage.text}</div>
+                                        <div className={styles.convName}>{u.name}</div>
+                                        <div className={styles.convLast}>{u.email}</div>
                                     </div>
-                                    <div className={styles.convMeta}>
-                                        <span className={styles.convTime}>{formatDate(conv.lastMessage.createdAt)}</span>
-                                        {conv.unread > 0 && <span className={styles.unreadBadge}>{conv.unread}</span>}
-                                    </div>
+                                    {u.role === "admin" && (
+                                        <span className={styles.roleTag}>Admin</span>
+                                    )}
                                 </div>
                             );
-                        })
-                    )}
-                </div>
+                        })}
+                    </div>
+                )}
+
+                {/* ── Chats tab ── */}
+                {sideTab === "chats" && (
+                    <div className={styles.convItems}>
+                        {convLoading ? (
+                            [1, 2, 3].map(i => <div key={i} className={styles.convSkeleton} />)
+                        ) : filteredConvs.length === 0 ? (
+                            <div className={styles.noConvs}>
+                                <span>No conversations yet</span>
+                                <span className={styles.noConvSub}>Go to People tab to start a DM</span>
+                            </div>
+                        ) : (
+                            filteredConvs.map(conv => {
+                                const other = conv.lastMessage.from.userId === myId
+                                    ? conv.lastMessage.to
+                                    : conv.lastMessage.from;
+                                const isActive = activeConv?.conversationId === conv._id;
+                                return (
+                                    <div
+                                        key={conv._id}
+                                        className={`${styles.convItem} ${isActive ? styles.convItemActive : ""}`}
+                                        onClick={() => openConversation(conv._id, other)}
+                                    >
+                                        <AvatarImg userId={other.userId} name={other.name} hasAvatar={other.hasAvatar} size={36} />
+                                        <div className={styles.convBody}>
+                                            <div className={styles.convName}>{other.name}</div>
+                                            <div className={styles.convLast}>{conv.lastMessage.text}</div>
+                                        </div>
+                                        <div className={styles.convMeta}>
+                                            <span className={styles.convTime}>{formatDate(conv.lastMessage.createdAt)}</span>
+                                            {conv.unread > 0 && <span className={styles.unreadBadge}>{conv.unread}</span>}
+                                        </div>
+                                    </div>
+                                );
+                            })
+                        )}
+                    </div>
+                )}
             </div>
 
-            {/* Right: Active DM */}
+            {/* ── Right: Active DM ── */}
             <div className={styles.dmChat}>
                 {!activeConv ? (
                     <div className={styles.noDM}>
                         <span className={styles.noDMIcon}>💌</span>
-                        <p>Select a conversation or start a new one</p>
-                        <button className={styles.startBtn} onClick={() => setShowUserList(true)}>New Message</button>
+                        <p>Select someone from the People list to start chatting</p>
                     </div>
                 ) : (
                     <>
@@ -310,7 +367,9 @@ const DMPanel = ({ socketRef, connected, user }) => {
                             </div>
                             <div>
                                 <div className={styles.chatHeaderName}>{activeConv.otherUser.name}</div>
-                                <div className={styles.chatHeaderSub}>Direct Message</div>
+                                <div className={styles.chatHeaderSub}>
+                                    {activeConv.otherUser.role === "admin" ? "👑 Admin" : "Direct Message"}
+                                </div>
                             </div>
                         </div>
 
@@ -333,7 +392,7 @@ const DMPanel = ({ socketRef, connected, user }) => {
                         </div>
 
                         <form className={styles.inputBar} onSubmit={handleSend}>
-                            <div className={styles.inputAvatar}>{user?.name?.charAt(0).toUpperCase()}</div>
+                            <AvatarImg userId={user?._id} name={user?.name} hasAvatar={user?.hasAvatar} size={34} />
                             <textarea
                                 className={styles.input}
                                 placeholder={`Message ${activeConv.otherUser.name}…`}
@@ -364,7 +423,12 @@ const MsgBubble = ({ msg, isMe, showInfo }) => (
     >
         {!isMe && (
             <div className={`${styles.avatar} ${!showInfo ? styles.avatarHidden : ""}`}>
-                {msg.sender?.name?.charAt(0).toUpperCase()}
+                <AvatarImg
+                    userId={msg.sender?.userId}
+                    name={msg.sender?.name}
+                    hasAvatar={msg.sender?.hasAvatar}
+                    size={34}
+                />
             </div>
         )}
         <div className={styles.msgGroup}>

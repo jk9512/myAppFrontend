@@ -4,6 +4,7 @@ import DataTable from "../../components/common/DataTable";
 import Modal from "../../components/common/Modal";
 import Button from "../../components/common/Button";
 import Input from "../../components/common/Input";
+import AvatarImg from "../../components/common/AvatarImg";
 import api from "../../api/axios";
 import styles from "./UsersPage.module.css";
 
@@ -120,7 +121,7 @@ const UsersPage = () => {
             accessor: "name",
             render: (val, row) => (
                 <div className={styles.userCell}>
-                    <div className={styles.avatar}>{val?.charAt(0)?.toUpperCase()}</div>
+                    <AvatarImg userId={row._id} name={val} hasAvatar={row.hasAvatar} size={38} />
                     <div>
                         <div className={styles.userName}>{val}</div>
                         <div className={styles.userEmail}>{row.email}</div>

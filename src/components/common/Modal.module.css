@@ -8,6 +8,7 @@
     justify-content: center;
     z-index: 1000;
     padding: 16px;
+    overflow-y: auto;
 }
 
 .modal {
@@ -15,8 +16,12 @@
     border: 1px solid var(--border);
     border-radius: 14px;
     width: 100%;
-    max-width: 480px;
+    max-width: 520px;
     box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 32px);
+    margin: auto;
 }
 
 .header {
@@ -47,4 +52,9 @@
 
 .body {
     padding: 20px 22px;
+    overflow-y: auto;
+    flex: 1;
+    /* Thin custom scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
 }

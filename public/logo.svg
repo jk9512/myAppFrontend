@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 80" width="200" height="80">
+  <!-- S letter made of geometric blocks -->
+  <g transform="translate(8, 8)">
+    <!-- Top horizontal block -->
+    <rect x="4" y="0" width="28" height="10" rx="1.5" fill="#1a3a5c"/>
+    <!-- Top-right block -->
+    <rect x="24" y="0" width="10" height="20" rx="1.5" fill="#0891b2"/>
+    <!-- Middle block -->
+    <rect x="4" y="18" width="28" height="10" rx="1.5" fill="#06b6d4"/>
+    <!-- Bottom-left block -->
+    <rect x="0" y="18" width="10" height="22" rx="1.5" fill="#1a3a5c"/>
+    <!-- Bottom horizontal block -->
+    <rect x="0" y="30" width="28" height="10" rx="1.5" fill="#0891b2"/>
+    <!-- Arrow up-right -->
+    <polygon points="28,2 36,-6 36,0 42,-6 36,-12 36,-6 28,-4" fill="#06b6d4" transform="translate(0,4)"/>
+  </g>
+  <!-- SANKALP text -->
+  <text x="62" y="38" font-family="Arial, sans-serif" font-size="22" font-weight="900" fill="#1a3a5c" letter-spacing="1">SANKALP</text>
+  <!-- INFOTECH text -->
+  <text x="62" y="60" font-family="Arial, sans-serif" font-size="18" font-weight="600" fill="#0891b2" letter-spacing="1">INFOTECH</text>
+</svg>

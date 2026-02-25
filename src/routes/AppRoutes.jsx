@@ -19,6 +19,8 @@ import Blogs from "../pages/Blogs";
 import BlogDetail from "../pages/BlogDetail";
 import BlogsPage from "../pages/admin/BlogsPage";
 import Chat from "../pages/Chat";
+import AboutUs from "../pages/AboutUs";
+import AboutUsPage from "../pages/admin/AboutUsPage";
 
 // Guard: must be logged in
 const ProtectedRoute = ({ children }) => {
@@ -49,6 +51,7 @@ const TrackedRoutes = () => {
                 <Route path="/blogs" element={<Blogs />} />
                 <Route path="/blogs/:id" element={<BlogDetail />} />
                 <Route path="/chat" element={<Chat />} />
+                <Route path="/about" element={<AboutUs />} />
                 <Route path="/" element={
                     <ProtectedRoute><Home /></ProtectedRoute>
                 } />
@@ -66,6 +69,7 @@ const TrackedRoutes = () => {
                 <Route path="portfolio" element={<PortfolioPage />} />
                 <Route path="contacts" element={<ContactsPage />} />
                 <Route path="blogs" element={<BlogsPage />} />
+                <Route path="about" element={<AboutUsPage />} />
             </Route>
 
             {/* Fallback */}

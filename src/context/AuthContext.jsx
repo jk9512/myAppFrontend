@@ -7,7 +7,6 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(() => {
         try {
             const stored = localStorage.getItem("user");
-            // Guard against the literal string "undefined" or null
             if (!stored || stored === "undefined" || stored === "null") return null;
             return JSON.parse(stored);
         } catch {
@@ -42,8 +41,34 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
     }, []);
 
+    /** Call after avatar upload to refresh hasAvatar flag */
+    const refreshUser = useCallback(async () => {
+        try {
+            const { data } = await api.get("/auth/me");
+            const fresh = { ...data.user };
+            // hasAvatar comes from a separate endpoint check since /me doesn't return it
+            try {
+                await api.get(`/users/${fresh._id}/avatar`);
+                fresh.hasAvatar = true;
+            } catch {
+                fresh.hasAvatar = false;
+            }
+            localStorage.setItem("user", JSON.stringify(fresh));
+            setUser(fresh);
+        } catch { /* ignore */ }
+    }, []);
+
+    /** Update local user state (name, hasAvatar, etc.) without server call */
+    const updateLocalUser = useCallback((patch) => {
+        setUser(prev => {
+            const updated = { ...prev, ...patch };
+            localStorage.setItem("user", JSON.stringify(updated));
+            return updated;
+        });
+    }, []);
+
     return (
-        <AuthContext.Provider value={{ user, token, login, register, logout }}>
+        <AuthContext.Provider value={{ user, token, login, register, logout, refreshUser, updateLocalUser }}>
             {children}
         </AuthContext.Provider>
     );

@@ -1,6 +1,6 @@
-# Maruti Blinds Management System - Frontend
+# Business Website Management System - Frontend
 
-This is the frontend client for the Maruti Blinds Management System, built with modern web technologies to provide a fast, responsive, and dynamic user interface.
+This is the frontend client for the Business Website Management System, built with modern web technologies to provide a fast, responsive, and dynamic user interface.
 
 ## 🚀 Technologies Used
 

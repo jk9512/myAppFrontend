@@ -33,6 +33,20 @@
     display: flex;
     flex-direction: column;
     gap: 0;
+
+}
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    margin-bottom: 12px;
+}
+
+.footerLogo {
+    height: 52px;
+    width: auto;
+    display: block;
 }
 
 .colTitle {

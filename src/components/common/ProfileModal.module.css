@@ -1,0 +1,138 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* ── Avatar Row ── */
+.avatarRow {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.avatarWrap {
+    position: relative;
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    cursor: pointer;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.previewImg {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+}
+
+.avatarOverlay {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.avatarWrap:hover .avatarOverlay {
+    opacity: 1;
+}
+
+.avatarInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.avatarHint {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.avatarSub {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.uploadBtn {
+    margin-top: 6px;
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    color: var(--primary-light);
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s;
+    width: fit-content;
+}
+
+.uploadBtn:hover {
+    background: rgba(99, 102, 241, 0.2);
+}
+
+/* ── Divider ── */
+.divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+
+/* ── Actions ── */
+.actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    padding-top: 4px;
+}
+
+/* ── Toast ── */
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 9999;
+    box-shadow: var(--shadow);
+}
+
+.success {
+    background: var(--success);
+    color: #fff;
+}
+
+.error {
+    background: var(--danger);
+    color: #fff;
+}
