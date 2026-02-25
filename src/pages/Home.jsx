@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import PageWrapper from "../components/common/PageWrapper";
 import Input from "../components/common/Input";
 import Button from "../components/common/Button";
+import ReelsSection from "../components/ReelsSection";
 import api from "../api/axios";
 import styles from "./Home.module.css";
 
@@ -407,6 +408,9 @@ const Home = () => {
                         <Link to="/blogs" className={styles.btnOutline}>View All Articles →</Link>
                     </motion.div>
                 </section>
+
+                {/* ── REELS ─────────────────────────────────────────── */}
+                <ReelsSection />
 
                 {/* ── CONTACT ─────────────────────────────────── */}
                 <section id="contact" className={styles.contactSection}>
