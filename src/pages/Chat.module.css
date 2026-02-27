@@ -503,6 +503,7 @@
     border-bottom: 1px solid var(--border);
     flex-shrink: 0;
     background: var(--bg-surface);
+    position: relative;
 }
 
 .chatHeaderIcon {
@@ -516,6 +517,11 @@
     justify-content: center;
 }
 
+.chatHeaderInfo {
+    display: flex;
+    flex-direction: column;
+}
+
 .chatHeaderName {
     font-size: 15px;
     font-weight: 700;
@@ -524,6 +530,110 @@
 .chatHeaderSub {
     font-size: 11px;
     color: var(--text-muted);
+}
+
+/* Group Management Panel (Header Dropdown area) */
+.groupManagePanel {
+    margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    padding: 12px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    min-width: 200px;
+    max-height: 300px;
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    z-index: 10;
+}
+
+.groupManageTop {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+    margin-bottom: 4px;
+}
+
+.groupManageTitle {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.manageBtnLeave,
+.manageBtnDelete {
+    background: transparent;
+    border: 1px solid #ef4444;
+    color: #ef4444;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.manageBtnLeave:hover,
+.manageBtnDelete:hover {
+    background: #ef4444;
+    color: white;
+}
+
+.groupMembersList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.groupMembersList::-webkit-scrollbar {
+    width: 4px;
+}
+
+.groupMembersList::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+}
+
+.groupMemberRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    padding: 4px;
+    border-radius: 6px;
+}
+
+.groupMemberRow:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.groupMemberName {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.removeMemberBtn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 16px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 4px;
+}
+
+.removeMemberBtn:hover {
+    color: #ef4444;
 }
 
 /* ── Messages area ───────────────────────────────────── */
@@ -780,6 +890,179 @@
 
 .loginLink:hover {
     opacity: 0.8;
+}
+
+/* ── Group List specific styles ──────────────────────── */
+.groupList {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.createGroupBtnWrap {
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.createGroupBtn {
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px dashed var(--primary);
+    background: rgba(99, 102, 241, 0.05);
+    color: var(--primary-light);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.createGroupBtn:hover {
+    background: rgba(99, 102, 241, 0.15);
+    border-style: solid;
+}
+
+/* ── Create Group Modal ──────────────────────────────── */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.modalContent {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    width: 90%;
+    max-width: 440px;
+    padding: 24px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.modalContent h3 {
+    margin: 0;
+    font-size: 18px;
+    color: var(--text-primary);
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.formGroup label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.modalInput {
+    background: var(--bg-hover);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--text-primary);
+    font-size: 14px;
+    outline: none;
+}
+
+.modalInput:focus {
+    border-color: var(--primary);
+}
+
+.userSelectMap {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 200px;
+    overflow-y: auto;
+    background: var(--bg-hover);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px;
+}
+
+.userSelectCard {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s;
+    background: transparent;
+}
+
+.userSelectCard:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.userSelected {
+    background: rgba(99, 102, 241, 0.1) !important;
+}
+
+.userSelectName {
+    flex: 1;
+    font-size: 14px;
+    color: var(--text-primary);
+}
+
+.userSelectCheck {
+    font-weight: bold;
+    color: var(--text-muted);
+}
+
+.userSelected .userSelectCheck {
+    color: var(--primary-light);
+}
+
+.modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.cancelBtn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.cancelBtn:hover {
+    background: var(--bg-hover);
+}
+
+.createBtn {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border: none;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.createBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 /* ── Responsive ──────────────────────────────────────── */

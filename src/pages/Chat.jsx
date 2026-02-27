@@ -34,20 +34,59 @@ const GroupChat = ({ socketRef, connected, online, user }) => {
     const [loading, setLoading] = useState(true);
     const bottomRef = useRef(null);
 
+    // Group state
+    const [activeRoom, setActiveRoom] = useState("general");
+    const [activeRoomName, setActiveRoomName] = useState("General Chat");
+    const [groups, setGroups] = useState([]);
+    const [showCreate, setShowCreate] = useState(false);
+    const [newGroupName, setNewGroupName] = useState("");
+    const [allUsers, setAllUsers] = useState([]);
+    const [selectedUsers, setSelectedUsers] = useState([]);
+    const [creating, setCreating] = useState(false);
+
+    // Fetch user groups and all users for creation
+    const loadGroups = useCallback(async () => {
+        if (!user) return;
+        try {
+            const { data } = await api.get("/groups");
+            setGroups(data.groups || []);
+        } catch (err) { }
+    }, [user]);
+
     useEffect(() => {
-        api.get(`/chat/messages?room=${ROOM}`)
+        loadGroups();
+        if (user) {
+            api.get("/users")
+                .then(({ data }) => setAllUsers((data.users || []).filter(u => (u._id || u.id) !== (user._id || user.id))))
+                .catch(() => { });
+        }
+    }, [user, loadGroups]);
+
+    // Fetch messages when room changes
+    useEffect(() => {
+        setLoading(true);
+        api.get(`/chat/messages?room=${activeRoom}`)
             .then(({ data }) => setMessages(data.messages || []))
             .finally(() => setLoading(false));
-    }, []);
+    }, [activeRoom]);
 
+    // Socket listeners
     useEffect(() => {
         const socket = socketRef.current;
         if (!socket) return;
-        socket.emit("join-room", ROOM);
-        const handler = (msg) => setMessages(prev => [...prev, msg]);
+
+        socket.emit("join-room", activeRoom);
+
+        const handler = (msg) => {
+            if (msg.room === activeRoom || (!msg.room && activeRoom === "general")) {
+                setMessages(prev => [...prev, msg]);
+            }
+        };
         socket.on("new-message", handler);
-        return () => socket.off("new-message", handler);
-    }, [socketRef, connected]);
+        return () => {
+            socket.off("new-message", handler);
+        };
+    }, [socketRef, connected, activeRoom]);
 
     useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
 
@@ -55,11 +94,76 @@ const GroupChat = ({ socketRef, connected, online, user }) => {
         e.preventDefault();
         if (!text.trim() || !user || !socketRef.current) return;
         socketRef.current.emit("send-message", {
-            room: ROOM,
+            room: activeRoom,
             text: text.trim(),
             sender: { name: user.name, userId: user._id || user.id || "" },
         });
         setText("");
+    };
+
+    const handleCreateGroup = async (e) => {
+        e.preventDefault();
+        if (!newGroupName.trim() || selectedUsers.length === 0) return;
+        setCreating(true);
+        try {
+            const { data } = await api.post("/groups", {
+                name: newGroupName.trim(),
+                members: selectedUsers
+            });
+            await loadGroups();
+            setShowCreate(false);
+            setNewGroupName("");
+            setSelectedUsers([]);
+            setActiveRoom(data.group._id);
+            setActiveRoomName(data.group.name);
+        } catch (err) {
+            alert("Error creating group");
+        } finally {
+            setCreating(false);
+        }
+    };
+
+    const toggleUser = (userId) => {
+        setSelectedUsers(prev =>
+            prev.includes(userId) ? prev.filter(id => id !== userId) : [...prev, userId]
+        );
+    };
+
+    const activeGroupObj = groups.find(g => g._id === activeRoom);
+    const isAdmin = activeGroupObj && user && activeGroupObj.admin?._id === (user._id || user.id);
+
+    const handleLeaveGroup = async () => {
+        if (!window.confirm("Are you sure you want to leave this group?")) return;
+        try {
+            await api.post(`/groups/${activeRoom}/leave`);
+            setActiveRoom("general");
+            setActiveRoomName("General Chat");
+            loadGroups();
+        } catch (err) {
+            alert(err.response?.data?.message || "Error leaving group");
+        }
+    };
+
+    const handleDeleteGroup = async () => {
+        if (!window.confirm("Are you sure you want to delete this group for everyone?")) return;
+        try {
+            await api.delete(`/groups/${activeRoom}`);
+            setActiveRoom("general");
+            setActiveRoomName("General Chat");
+            loadGroups();
+        } catch (err) {
+            alert(err.response?.data?.message || "Error deleting group");
+        }
+    };
+
+    const handleRemoveMember = async (memberId) => {
+        if (!window.confirm("Remove this member from the group?")) return;
+        try {
+            await api.delete(`/groups/${activeRoom}/members/${memberId}`);
+            loadGroups();
+        } catch (err) {
+            alert(err.response?.data?.message || "Error removing member");
+        }
     };
 
     return (
@@ -67,23 +171,49 @@ const GroupChat = ({ socketRef, connected, online, user }) => {
             {/* ── Left: Room info sidebar ── */}
             <div className={styles.groupSidebar}>
                 <div className={styles.convListHeader}>
-                    <span className={styles.convListTitle}>🌐 General</span>
+                    <span className={styles.convListTitle}>Groups</span>
                     <span className={`${styles.statusDot} ${connected ? styles.online : styles.offline}`} />
                 </div>
-                <div className={styles.groupSidebarBody}>
-                    <div className={styles.groupRoomCard}>
+
+                <div className={styles.groupList}>
+                    <div
+                        className={`${styles.convItem} ${activeRoom === "general" ? styles.convItemActive : ""}`}
+                        onClick={() => { setActiveRoom("general"); setActiveRoomName("General Chat"); }}
+                    >
                         <div className={styles.groupRoomIcon}>🌐</div>
-                        <div className={styles.groupRoomName}>General Chat</div>
-                        <div className={styles.groupRoomDesc}>A public room for everyone. Be respectful!</div>
+                        <div className={styles.convBody}>
+                            <div className={styles.convName}>General Chat</div>
+                            <div className={styles.convLast}>Public Room</div>
+                        </div>
                     </div>
+
+                    {user && (
+                        <div className={styles.createGroupBtnWrap}>
+                            <button className={styles.createGroupBtn} onClick={() => setShowCreate(true)}>
+                                ➕ Create Group
+                            </button>
+                        </div>
+                    )}
+
+                    {groups.map(g => (
+                        <div
+                            key={g._id}
+                            className={`${styles.convItem} ${activeRoom === g._id ? styles.convItemActive : ""}`}
+                            onClick={() => { setActiveRoom(g._id); setActiveRoomName(g.name); }}
+                        >
+                            <div className={styles.groupRoomIcon}>📁</div>
+                            <div className={styles.convBody}>
+                                <div className={styles.convName}>{g.name}</div>
+                                <div className={styles.convLast}>{g.members?.length || 0} members</div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                <div className={styles.groupSidebarBody} style={{ marginTop: 'auto' }}>
                     <div className={styles.groupOnlineBox}>
                         <span className={styles.groupOnlineDot} />
-                        <span className={styles.groupOnlineText}>{online} online right now</span>
-                    </div>
-                    <div className={styles.groupTips}>
-                        <p className={styles.groupTipTitle}>💡 Tips</p>
-                        <p>Press <kbd className={styles.kbd}>Enter</kbd> to send</p>
-                        <p>Press <kbd className={styles.kbd}>Shift+Enter</kbd> for new line</p>
+                        <span className={styles.groupOnlineText}>{activeRoom === "general" ? online : "Group member"}s connected</span>
                     </div>
                 </div>
             </div>
@@ -91,11 +221,53 @@ const GroupChat = ({ socketRef, connected, online, user }) => {
             {/* ── Right: Chat ── */}
             <div className={styles.groupChat}>
                 <div className={styles.chatHeader}>
-                    <div className={styles.chatHeaderIcon}>🌐</div>
-                    <div>
-                        <div className={styles.chatHeaderName}>General Chat</div>
-                        <div className={styles.chatHeaderSub}>{online} member{online !== 1 ? "s" : ""} online</div>
+                    <div className={styles.chatHeaderIcon}>{activeRoom === "general" ? "🌐" : "📁"}</div>
+                    <div className={styles.chatHeaderInfo}>
+                        <div className={styles.chatHeaderName}>{activeRoomName}</div>
+                        <div className={styles.chatHeaderSub}>
+                            {activeRoom === "general"
+                                ? `${online} member${online !== 1 ? "s" : ""} online`
+                                : `${activeGroupObj?.members?.length || 0} members`}
+                        </div>
                     </div>
+
+                    {/* Group Management Dropdown / Panel */}
+                    {activeRoom !== "general" && activeGroupObj && (
+                        <div className={styles.groupManagePanel}>
+                            <div className={styles.groupManageTop}>
+                                <span className={styles.groupManageTitle}>Members</span>
+                                {isAdmin ? (
+                                    <button className={styles.manageBtnDelete} onClick={handleDeleteGroup}>Delete Group</button>
+                                ) : (
+                                    <button className={styles.manageBtnLeave} onClick={handleLeaveGroup}>Leave Group</button>
+                                )}
+                            </div>
+                            <div className={styles.groupMembersList}>
+                                {activeGroupObj.members.map(m => {
+                                    const isMAdmin = m._id === activeGroupObj.admin?._id;
+                                    const isMe = m._id === (user?._id || user?.id);
+                                    return (
+                                        <div key={m._id} className={styles.groupMemberRow}>
+                                            <AvatarImg userId={m._id} name={m.name} hasAvatar={m.hasAvatar} size={24} />
+                                            <span className={styles.groupMemberName}>
+                                                {m.name} {isMe && "(You)"} {isMAdmin && "👑"}
+                                            </span>
+                                            {isAdmin && !isMAdmin && (
+                                                <button
+                                                    className={styles.removeMemberBtn}
+                                                    title="Remove Member"
+                                                    onClick={() => handleRemoveMember(m._id)}
+                                                >
+                                                    ×
+                                                </button>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
+
                     <span className={`${styles.statusDot} ${connected ? styles.online : styles.offline}`} style={{ marginLeft: "auto" }} />
                 </div>
 
@@ -117,7 +289,7 @@ const GroupChat = ({ socketRef, connected, online, user }) => {
                         <AvatarImg userId={user?._id} name={user?.name} hasAvatar={user?.hasAvatar} size={34} />
                         <textarea
                             className={styles.input}
-                            placeholder="Type a message… (Enter to send)"
+                            placeholder={`Message ${activeRoomName}… (Enter to send)`}
                             value={text}
                             onChange={e => setText(e.target.value)}
                             onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) handleSend(e); }}
@@ -128,6 +300,51 @@ const GroupChat = ({ socketRef, connected, online, user }) => {
                     </form>
                 ) : (
                     <GuestBar />
+                )}
+
+                {/* Create Group Modal */}
+                {showCreate && (
+                    <div className={styles.modalOverlay} onClick={() => setShowCreate(false)}>
+                        <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+                            <h3>Create New Group</h3>
+                            <form onSubmit={handleCreateGroup}>
+                                <div className={styles.formGroup}>
+                                    <label>Group Name</label>
+                                    <input
+                                        type="text"
+                                        value={newGroupName}
+                                        onChange={e => setNewGroupName(e.target.value)}
+                                        placeholder="e.g. Design Team"
+                                        required
+                                        maxLength={50}
+                                        className={styles.modalInput}
+                                    />
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label>Select Members</label>
+                                    <div className={styles.userSelectMap}>
+                                        {allUsers.map(u => (
+                                            <div
+                                                key={u._id || u.id}
+                                                className={`${styles.userSelectCard} ${selectedUsers.includes(u._id || u.id) ? styles.userSelected : ""}`}
+                                                onClick={() => toggleUser(u._id || u.id)}
+                                            >
+                                                <AvatarImg userId={u._id || u.id} name={u.name} hasAvatar={u.hasAvatar} size={30} />
+                                                <span className={styles.userSelectName}>{u.name}</span>
+                                                <span className={styles.userSelectCheck}>{selectedUsers.includes(u._id || u.id) ? "✓" : "+"}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className={styles.modalActions}>
+                                    <button type="button" className={styles.cancelBtn} onClick={() => setShowCreate(false)}>Cancel</button>
+                                    <button type="submit" className={styles.createBtn} disabled={creating || !newGroupName.trim() || selectedUsers.length === 0}>
+                                        {creating ? "Creating..." : "Create Group"}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 )}
             </div>
         </div>
