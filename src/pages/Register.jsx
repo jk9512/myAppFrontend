@@ -9,7 +9,7 @@ import styles from "./Auth.module.css";
 const Register = () => {
     const { register } = useAuth();
     const navigate = useNavigate();
-    const [form, setForm] = useState({ name: "", email: "", password: "" });
+    const [form, setForm] = useState({ name: "", email: "", password: "", plan: "free" });
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
     const [serverError, setServerError] = useState("");
@@ -29,7 +29,7 @@ const Register = () => {
         setLoading(true);
         setServerError("");
         try {
-            await register(form.name, form.email, form.password);
+            await register(form.name, form.email, form.password, form.plan);
             navigate("/");
         } catch (err) {
             setServerError(err.response?.data?.message || "Registration failed");
@@ -77,6 +77,18 @@ const Register = () => {
                             value={form.password}
                             onChange={(e) => setForm({ ...form, password: e.target.value })}
                             error={errors.password}
+                        />
+                        <Input
+                            id="plan"
+                            label="Subscription Plan"
+                            type="select"
+                            value={form.plan}
+                            onChange={(e) => setForm({ ...form, plan: e.target.value })}
+                            options={[
+                                { value: "free", label: "Free (14 Days)" },
+                                { value: "premium", label: "Premium (3 Months)" },
+                                { value: "pro", label: "Pro (3 Months)" }
+                            ]}
                         />
                         <Button type="submit" loading={loading} fullWidth>
                             Create Account

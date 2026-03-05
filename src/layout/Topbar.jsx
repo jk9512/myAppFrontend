@@ -24,7 +24,14 @@ const Topbar = () => {
                 </div>
                 <div className={styles.userInfo}>
                     <span className={styles.name}>{user?.name}</span>
-                    <span className={styles.role}>{user?.role}</span>
+                    <span className={styles.role}>
+                        {user?.role}
+                        {user?.plan && (
+                            <span style={{ fontSize: "0.6rem", padding: "1px 4px", borderRadius: "4px", background: "#f59e0b", color: "#fff", marginLeft: "6px", textTransform: "uppercase" }}>
+                                {user.plan}
+                            </span>
+                        )}
+                    </span>
                 </div>
                 <button className={styles.logoutBtn} onClick={handleLogout}>
                     Logout

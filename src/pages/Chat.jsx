@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { io } from "socket.io-client";
+import EmojiPicker from "emoji-picker-react";
+import { Paperclip, Smile, X, Send } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import PageWrapper from "../components/common/PageWrapper";
 import api from "../api/axios";
@@ -43,6 +45,13 @@ const GroupChat = ({ socketRef, connected, online, user }) => {
     const [allUsers, setAllUsers] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [creating, setCreating] = useState(false);
+    const [showGroupManage, setShowGroupManage] = useState(false);
+
+    // Media & Emoji
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const [mediaFile, setMediaFile] = useState(null);
+    const [mediaPreview, setMediaPreview] = useState(null);
+    const fileInputRef = useRef(null);
 
     // Fetch user groups and all users for creation
     const loadGroups = useCallback(async () => {
@@ -65,6 +74,7 @@ const GroupChat = ({ socketRef, connected, online, user }) => {
     // Fetch messages when room changes
     useEffect(() => {
         setLoading(true);
+        setShowGroupManage(false); // hide panel on room change
         api.get(`/chat/messages?room=${activeRoom}`)
             .then(({ data }) => setMessages(data.messages || []))
             .finally(() => setLoading(false));
@@ -90,15 +100,56 @@ const GroupChat = ({ socketRef, connected, online, user }) => {
 
     useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
 
-    const handleSend = (e) => {
-        e.preventDefault();
-        if (!text.trim() || !user || !socketRef.current) return;
+    const handleFileSelect = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (file.size > 50 * 1024 * 1024) {
+            alert("File is too large (max 50MB)");
+            return;
+        }
+        setMediaFile(file);
+        setMediaPreview(URL.createObjectURL(file));
+        setShowEmojiPicker(false);
+    };
+
+    const clearMedia = () => {
+        setMediaFile(null);
+        setMediaPreview(null);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+    };
+
+    const handleSend = async (e) => {
+        e?.preventDefault();
+        if ((!text.trim() && !mediaFile) || !user || !socketRef.current) return;
+
+        let mediaUrl = "";
+        let mediaType = "none";
+
+        if (mediaFile) {
+            const formData = new FormData();
+            formData.append("media", mediaFile);
+            try {
+                const { data } = await api.post("/upload/chat-media", formData, {
+                    headers: { "Content-Type": "multipart/form-data" }
+                });
+                mediaUrl = data.mediaUrl;
+                mediaType = data.mediaType;
+            } catch (err) {
+                alert("Failed to upload media");
+                return;
+            }
+        }
+
         socketRef.current.emit("send-message", {
             room: activeRoom,
             text: text.trim(),
             sender: { name: user.name, userId: user._id || user.id || "" },
+            mediaUrl,
+            mediaType
         });
         setText("");
+        clearMedia();
+        setShowEmojiPicker(false);
     };
 
     const handleCreateGroup = async (e) => {
@@ -233,42 +284,54 @@ const GroupChat = ({ socketRef, connected, online, user }) => {
 
                     {/* Group Management Dropdown / Panel */}
                     {activeRoom !== "general" && activeGroupObj && (
-                        <div className={styles.groupManagePanel}>
-                            <div className={styles.groupManageTop}>
-                                <span className={styles.groupManageTitle}>Members</span>
-                                {isAdmin ? (
-                                    <button className={styles.manageBtnDelete} onClick={handleDeleteGroup}>Delete Group</button>
-                                ) : (
-                                    <button className={styles.manageBtnLeave} onClick={handleLeaveGroup}>Leave Group</button>
-                                )}
-                            </div>
-                            <div className={styles.groupMembersList}>
-                                {activeGroupObj.members.map(m => {
-                                    const isMAdmin = m._id === activeGroupObj.admin?._id;
-                                    const isMe = m._id === (user?._id || user?.id);
-                                    return (
-                                        <div key={m._id} className={styles.groupMemberRow}>
-                                            <AvatarImg userId={m._id} name={m.name} hasAvatar={m.hasAvatar} size={24} />
-                                            <span className={styles.groupMemberName}>
-                                                {m.name} {isMe && "(You)"} {isMAdmin && "👑"}
-                                            </span>
-                                            {isAdmin && !isMAdmin && (
-                                                <button
-                                                    className={styles.removeMemberBtn}
-                                                    title="Remove Member"
-                                                    onClick={() => handleRemoveMember(m._id)}
-                                                >
-                                                    ×
-                                                </button>
-                                            )}
-                                        </div>
-                                    );
-                                })}
-                            </div>
+                        <div style={{ position: "relative", marginLeft: "auto", display: "flex", alignItems: "center" }}>
+                            <button
+                                onClick={() => setShowGroupManage(!showGroupManage)}
+                                className={styles.actionBtn}
+                                title="Group Actions"
+                            >
+                                ⚙️
+                            </button>
+
+                            {showGroupManage && (
+                                <div className={styles.groupManagePanel}>
+                                    <div className={styles.groupManageTop}>
+                                        <span className={styles.groupManageTitle}>Members</span>
+                                        {isAdmin ? (
+                                            <button className={styles.manageBtnDelete} onClick={handleDeleteGroup}>Delete Group</button>
+                                        ) : (
+                                            <button className={styles.manageBtnLeave} onClick={handleLeaveGroup}>Leave Group</button>
+                                        )}
+                                    </div>
+                                    <div className={styles.groupMembersList}>
+                                        {activeGroupObj.members.map(m => {
+                                            const isMAdmin = m._id === activeGroupObj.admin?._id;
+                                            const isMe = m._id === (user?._id || user?.id);
+                                            return (
+                                                <div key={m._id} className={styles.groupMemberRow}>
+                                                    <AvatarImg userId={m._id} name={m.name} hasAvatar={m.hasAvatar} size={24} />
+                                                    <span className={styles.groupMemberName}>
+                                                        {m.name} {isMe && "(You)"} {isMAdmin && "👑"}
+                                                    </span>
+                                                    {isAdmin && !isMAdmin && (
+                                                        <button
+                                                            className={styles.removeMemberBtn}
+                                                            title="Remove Member"
+                                                            onClick={() => handleRemoveMember(m._id)}
+                                                        >
+                                                            ×
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )}
 
-                    <span className={`${styles.statusDot} ${connected ? styles.online : styles.offline}`} style={{ marginLeft: "auto" }} />
+                    <span className={`${styles.statusDot} ${connected ? styles.online : styles.offline}`} style={{ marginLeft: activeRoom === "general" ? "auto" : "10px" }} />
                 </div>
 
                 <div className={styles.messages}>
@@ -285,19 +348,55 @@ const GroupChat = ({ socketRef, connected, online, user }) => {
                 </div>
 
                 {user ? (
-                    <form className={styles.inputBar} onSubmit={handleSend}>
-                        <AvatarImg userId={user?._id} name={user?.name} hasAvatar={user?.hasAvatar} size={34} />
-                        <textarea
-                            className={styles.input}
-                            placeholder={`Message ${activeRoomName}… (Enter to send)`}
-                            value={text}
-                            onChange={e => setText(e.target.value)}
-                            onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) handleSend(e); }}
-                            rows={1}
-                            maxLength={1000}
-                        />
-                        <button type="submit" className={styles.sendBtn} disabled={!text.trim() || !connected}>➤</button>
-                    </form>
+                    <div style={{ position: "relative" }}>
+                        {/* Media Preview */}
+                        {mediaPreview && (
+                            <div className={styles.mediaPreviewWrap}>
+                                <button type="button" className={styles.removeMediaBtn} onClick={clearMedia}><X size={14} /></button>
+                                {mediaFile?.type.startsWith("video/") ? (
+                                    <video src={mediaPreview} className={styles.mediaPreview} controls />
+                                ) : (
+                                    <img src={mediaPreview} alt="preview" className={styles.mediaPreview} />
+                                )}
+                            </div>
+                        )}
+
+                        {/* Emoji Picker */}
+                        {showEmojiPicker && (
+                            <div className={styles.emojiPickerWrap}>
+                                <EmojiPicker
+                                    onEmojiClick={(emojiData) => setText(prev => prev + emojiData.emoji)}
+                                    theme="dark"
+                                />
+                            </div>
+                        )}
+
+                        <form className={styles.inputBar} onSubmit={handleSend}>
+                            <AvatarImg userId={user?._id} name={user?.name} hasAvatar={user?.hasAvatar} size={34} />
+
+                            <button type="button" className={styles.actionBtn} onClick={() => fileInputRef.current?.click()} title="Attach Image/Video">
+                                <Paperclip size={20} />
+                            </button>
+                            <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept="image/*,video/*" onChange={handleFileSelect} />
+
+                            <button type="button" className={styles.actionBtn} onClick={() => setShowEmojiPicker(!showEmojiPicker)} title="Add Emoji">
+                                <Smile size={20} />
+                            </button>
+
+                            <textarea
+                                className={styles.input}
+                                placeholder={`Message ${activeRoomName}… (Enter to send)`}
+                                value={text}
+                                onChange={e => setText(e.target.value)}
+                                onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) handleSend(e); }}
+                                rows={1}
+                                maxLength={1000}
+                            />
+                            <button type="submit" className={styles.sendBtn} disabled={(!text.trim() && !mediaFile) || !connected}>
+                                <Send size={18} />
+                            </button>
+                        </form>
+                    </div>
                 ) : (
                     <GuestBar />
                 )}
@@ -366,6 +465,12 @@ const DMPanel = ({ socketRef, connected, user }) => {
     const [usersLoading, setUsersLoading] = useState(true);
     const [msgLoading, setMsgLoading] = useState(false);
     const bottomRef = useRef(null);
+
+    // Media & Emoji
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const [mediaFile, setMediaFile] = useState(null);
+    const [mediaPreview, setMediaPreview] = useState(null);
+    const fileInputRef = useRef(null);
 
     const myId = user?._id || user?.id;
 
@@ -437,15 +542,57 @@ const DMPanel = ({ socketRef, connected, user }) => {
         openConversation(convId, { userId: otherId, name: otherUser.name, role: otherUser.role });
     };
 
-    const handleSend = (e) => {
-        e.preventDefault();
-        if (!text.trim() || !user || !activeConv || !socketRef.current) return;
+    const handleFileSelect = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (file.size > 50 * 1024 * 1024) {
+            alert("File is too large (max 50MB)");
+            return;
+        }
+        setMediaFile(file);
+        setMediaPreview(URL.createObjectURL(file));
+        setShowEmojiPicker(false);
+    };
+
+    const clearMedia = () => {
+        setMediaFile(null);
+        setMediaPreview(null);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+    };
+
+    const handleSend = async (e) => {
+        e?.preventDefault();
+        if ((!text.trim() && !mediaFile) || !user || !activeConv || !socketRef.current) return;
+
+        let mediaUrl = "";
+        let mediaType = "none";
+
+        if (mediaFile) {
+            const formData = new FormData();
+            formData.append("media", mediaFile);
+            try {
+                const { data } = await api.post("/upload/chat-media", formData, {
+                    headers: { "Content-Type": "multipart/form-data" }
+                });
+                mediaUrl = data.mediaUrl;
+                mediaType = data.mediaType;
+            } catch (err) {
+                alert("Failed to upload media");
+                return;
+            }
+        }
+
         socketRef.current.emit("dm-send", {
             from: { userId: myId, name: user.name },
             to: activeConv.otherUser,
             text: text.trim(),
+            mediaUrl,
+            mediaType
         });
+
         setText("");
+        clearMedia();
+        setShowEmojiPicker(false);
         setTimeout(loadConversations, 500);
     };
 
@@ -608,21 +755,185 @@ const DMPanel = ({ socketRef, connected, user }) => {
                             <div ref={bottomRef} />
                         </div>
 
-                        <form className={styles.inputBar} onSubmit={handleSend}>
-                            <AvatarImg userId={user?._id} name={user?.name} hasAvatar={user?.hasAvatar} size={34} />
-                            <textarea
-                                className={styles.input}
-                                placeholder={`Message ${activeConv.otherUser.name}…`}
-                                value={text}
-                                onChange={e => setText(e.target.value)}
-                                onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) handleSend(e); }}
-                                rows={1}
-                                maxLength={1000}
-                            />
-                            <button type="submit" className={styles.sendBtn} disabled={!text.trim() || !connected}>➤</button>
-                        </form>
+                        <div style={{ position: "relative" }}>
+                            {/* Media Preview */}
+                            {mediaPreview && (
+                                <div className={styles.mediaPreviewWrap}>
+                                    <button type="button" className={styles.removeMediaBtn} onClick={clearMedia}><X size={14} /></button>
+                                    {mediaFile?.type.startsWith("video/") ? (
+                                        <video src={mediaPreview} className={styles.mediaPreview} controls />
+                                    ) : (
+                                        <img src={mediaPreview} alt="preview" className={styles.mediaPreview} />
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Emoji Picker */}
+                            {showEmojiPicker && (
+                                <div className={styles.emojiPickerWrap}>
+                                    <EmojiPicker
+                                        onEmojiClick={(emojiData) => setText(prev => prev + emojiData.emoji)}
+                                        theme="dark"
+                                    />
+                                </div>
+                            )}
+
+                            <form className={styles.inputBar} onSubmit={handleSend}>
+                                <AvatarImg userId={user?._id} name={user?.name} hasAvatar={user?.hasAvatar} size={34} />
+
+                                <button type="button" className={styles.actionBtn} onClick={() => fileInputRef.current?.click()} title="Attach Image/Video">
+                                    <Paperclip size={20} />
+                                </button>
+                                <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept="image/*,video/*" onChange={handleFileSelect} />
+
+                                <button type="button" className={styles.actionBtn} onClick={() => setShowEmojiPicker(!showEmojiPicker)} title="Add Emoji">
+                                    <Smile size={20} />
+                                </button>
+
+                                <textarea
+                                    className={styles.input}
+                                    placeholder={`Message ${activeConv.otherUser.name}…`}
+                                    value={text}
+                                    onChange={e => setText(e.target.value)}
+                                    onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) handleSend(e); }}
+                                    rows={1}
+                                    maxLength={1000}
+                                />
+                                <button type="submit" className={styles.sendBtn} disabled={(!text.trim() && !mediaFile) || !connected}>
+                                    <Send size={18} />
+                                </button>
+                            </form>
+                        </div>
                     </>
                 )}
+            </div>
+        </div>
+    );
+};
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/*  AI CHAT PANEL                                                               */
+/* ─────────────────────────────────────────────────────────────────────────── */
+const AIChatPanel = ({ user }) => {
+    const [messages, setMessages] = useState([
+        { _id: "welcome", text: "Hello! I am your AI Assistant powered by Gemini. How can I help you today?", isMe: false, sender: { name: "AI Assistant" }, createdAt: Date.now() }
+    ]);
+    const [text, setText] = useState("");
+    const [loading, setLoading] = useState(false);
+    const bottomRef = useRef(null);
+
+    useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, loading]);
+
+    const handleSend = async (e) => {
+        e?.preventDefault();
+        if (!text.trim() || !user) return;
+
+        const userMsg = {
+            _id: Date.now().toString(),
+            text: text.trim(),
+            isMe: true,
+            sender: { name: user.name, userId: user._id || user.id },
+            createdAt: Date.now()
+        };
+
+        setMessages(prev => [...prev, userMsg]);
+        setText("");
+        setLoading(true);
+
+        const recentHistory = messages.slice(-6).map(m => ({
+            text: m.text,
+            isMe: m.isMe,
+        }));
+
+        try {
+            const { data } = await api.post("/chat/ai", {
+                prompt: userMsg.text,
+                history: recentHistory
+            });
+
+            setMessages(prev => [...prev, {
+                _id: Date.now().toString() + "-ai",
+                text: data.reply,
+                isMe: false,
+                sender: { name: "AI Assistant" },
+                createdAt: Date.now()
+            }]);
+        } catch (err) {
+            setMessages(prev => [...prev, {
+                _id: Date.now().toString() + "-err",
+                text: err.response?.data?.message || "Sorry, I encountered an error and cannot process your request right now.",
+                isMe: false,
+                sender: { name: "System Error" },
+                createdAt: Date.now()
+            }]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (!user) return <div className={styles.groupLayout}><div className={styles.groupChat}><GuestBar /></div></div>;
+
+    return (
+        <div className={styles.groupLayout}>
+            <div className={styles.groupSidebar}>
+                <div className={styles.convListHeader}>
+                    <span className={styles.convListTitle}>AI Assistant</span>
+                </div>
+                <div className={styles.groupList}>
+                    <div className={`${styles.convItem} ${styles.convItemActive}`}>
+                        <div className={styles.groupRoomIcon}>🤖</div>
+                        <div className={styles.convBody}>
+                            <div className={styles.convName}>AI Chatbot</div>
+                            <div className={styles.convLast}>Powered by Gemini</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className={styles.groupChat}>
+                <div className={styles.chatHeader}>
+                    <div className={styles.chatHeaderIcon}>🤖</div>
+                    <div className={styles.chatHeaderInfo}>
+                        <div className={styles.chatHeaderName}>Gemini AI</div>
+                        <div className={styles.chatHeaderSub}>Virtual Assistant</div>
+                    </div>
+                </div>
+
+                <div className={styles.messages}>
+                    {messages.length === 0 ? <EmptyChat /> : (
+                        <AnimatePresence initial={false}>
+                            {messages.map((msg, idx) => {
+                                const showAvatar = idx === 0 || messages[idx - 1]?.sender?.name !== msg.sender?.name;
+                                return <MsgBubble key={msg._id} msg={msg} isMe={msg.isMe} showInfo={showAvatar} />;
+                            })}
+                        </AnimatePresence>
+                    )}
+                    {loading && (
+                        <div style={{ display: "flex", padding: "16px", color: "var(--text-muted)", alignItems: "center" }}>
+                            <div className={styles.spinner} style={{ width: 16, height: 16, borderTopColor: "var(--primary)", borderRightColor: "var(--primary)" }} />
+                            <span style={{ marginLeft: 8 }}>AI is typing...</span>
+                        </div>
+                    )}
+                    <div ref={bottomRef} />
+                </div>
+
+                <div style={{ position: "relative" }}>
+                    <form className={styles.inputBar} onSubmit={handleSend}>
+                        <AvatarImg userId={user?._id} name={user?.name} hasAvatar={user?.hasAvatar} size={34} />
+                        <textarea
+                            className={styles.input}
+                            placeholder="Ask the AI anything... (Enter to send)"
+                            value={text}
+                            onChange={e => setText(e.target.value)}
+                            onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) handleSend(e); }}
+                            rows={1}
+                            maxLength={2000}
+                        />
+                        <button type="submit" className={styles.sendBtn} disabled={!text.trim() || loading}>
+                            <Send size={18} />
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     );
@@ -650,7 +961,18 @@ const MsgBubble = ({ msg, isMe, showInfo }) => (
         )}
         <div className={styles.msgGroup}>
             {showInfo && !isMe && <span className={styles.senderName}>{msg.sender?.name}</span>}
-            <div className={`${styles.bubble} ${isMe ? styles.bubbleMe : styles.bubbleOther}`}>{msg.text}</div>
+
+            {msg.mediaUrl && (
+                <div className={styles.msgMediaWrap}>
+                    {msg.mediaType === "video" ? (
+                        <video src={`${SERVER_URL}${msg.mediaUrl}`} controls className={styles.msgVideo} />
+                    ) : (
+                        <img src={`${SERVER_URL}${msg.mediaUrl}`} alt="Attachment" className={styles.msgImage} />
+                    )}
+                </div>
+            )}
+
+            {msg.text && <div className={`${styles.bubble} ${isMe ? styles.bubbleMe : styles.bubbleOther}`}>{msg.text}</div>}
             <span className={styles.time}>{formatTime(msg.createdAt)}</span>
         </div>
         {isMe && <div className={`${styles.avatar} ${styles.avatarMe}`}>{msg.sender?.name?.charAt(0).toUpperCase()}</div>}
@@ -722,10 +1044,18 @@ const Chat = () => {
                     >
                         💌 Direct Messages
                     </button>
+                    <button
+                        className={`${styles.tab} ${tab === "ai" ? styles.tabActive : ""}`}
+                        onClick={() => setTab("ai")}
+                    >
+                        🤖 AI Assistant
+                    </button>
                 </div>
 
                 {tab === "group" ? (
                     <GroupChat socketRef={socketRef} connected={connected} online={online} user={user} />
+                ) : tab === "ai" ? (
+                    <AIChatPanel user={user} />
                 ) : (
                     <DMPanel socketRef={socketRef} connected={connected} user={user} />
                 )}

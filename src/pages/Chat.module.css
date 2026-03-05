@@ -504,6 +504,7 @@
     flex-shrink: 0;
     background: var(--bg-surface);
     position: relative;
+    z-index: 20;
 }
 
 .chatHeaderIcon {
@@ -538,17 +539,17 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    background: var(--bg-elevated);
+    background: var(--bg-surface);
     border: 1px solid var(--border);
     padding: 12px;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    min-width: 200px;
-    max-height: 300px;
+    min-width: 250px;
+    max-height: 400px;
     position: absolute;
-    top: 60px;
-    right: 20px;
-    z-index: 10;
+    top: 40px;
+    right: 0;
+    z-index: 100;
 }
 
 .groupManageTop {
@@ -605,14 +606,16 @@
 .groupMemberRow {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 13px;
-    padding: 4px;
-    border-radius: 6px;
+    gap: 12px;
+    font-size: 14px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    transition: background 0.15s;
+    color: var(--text-primary);
 }
 
 .groupMemberRow:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--bg-hover);
 }
 
 .groupMemberName {
@@ -620,6 +623,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    font-weight: 500;
 }
 
 .removeMemberBtn {
@@ -1063,6 +1067,90 @@
 .createBtn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+/* ── Media & Emoji ───────────────────────────────────── */
+.emojiPickerWrap {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    right: 0;
+    z-index: 50;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.mediaPreviewWrap {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 20px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    z-index: 40;
+}
+
+.mediaPreview {
+    max-height: 120px;
+    max-width: 200px;
+    border-radius: 8px;
+    object-fit: cover;
+    display: block;
+}
+
+.removeMediaBtn {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.actionBtn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background 0.2s, color 0.2s;
+    flex-shrink: 0;
+}
+
+.actionBtn:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.msgMediaWrap {
+    margin-top: 4px;
+    border-radius: 12px;
+    overflow: hidden;
+    max-width: 280px;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.msgImage,
+.msgVideo {
+    display: block;
+    max-width: 100%;
+    max-height: 250px;
+    object-fit: contain;
+    border-radius: 12px;
 }
 
 /* ── Responsive ──────────────────────────────────────── */

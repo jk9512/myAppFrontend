@@ -23,6 +23,7 @@ import AboutUs from "../pages/AboutUs";
 import AboutUsPage from "../pages/admin/AboutUsPage";
 import Reels from "../pages/Reels";
 import ReelsPage from "../pages/admin/ReelsPage";
+import WhatsAppNotification from "../pages/WhatsAppNotification";
 
 // Guard: must be logged in
 const ProtectedRoute = ({ children }) => {
@@ -55,6 +56,7 @@ const TrackedRoutes = () => {
                 <Route path="/chat" element={<Chat />} />
                 <Route path="/about" element={<AboutUs />} />
                 <Route path="/reels" element={<Reels />} />
+                <Route path="/whatsapp" element={<WhatsAppNotification />} />
                 <Route path="/" element={
                     <ProtectedRoute><Home /></ProtectedRoute>
                 } />

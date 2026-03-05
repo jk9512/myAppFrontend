@@ -13,6 +13,7 @@ const navItems = [
     { to: "/admin/blogs", label: "Blogs", icon: "✍️" },
     { to: "/admin/about", label: "About Us", icon: "🏢" },
     { to: "/admin/reels", label: "Reels", icon: "📱" },
+    { to: "/whatsapp", label: "WhatsApp", icon: "💬" },
 ];
 
 const Sidebar = ({ collapsed, onCollapse }) => {

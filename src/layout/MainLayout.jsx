@@ -49,6 +49,11 @@ const MainLayout = () => {
                             >
                                 <AvatarImg userId={user._id} name={user.name} hasAvatar={user.hasAvatar} size={32} />
                                 <span className={styles.avatarName}>{user.name?.split(" ")[0]}</span>
+                                {user.plan && (
+                                    <span style={{ fontSize: "0.65rem", padding: "2px 6px", borderRadius: "10px", background: "var(--primary)", color: "white", marginLeft: "6px", textTransform: "uppercase", fontWeight: "bold" }}>
+                                        {user.plan}
+                                    </span>
+                                )}
                             </button>
                             <button className={styles.logoutBtn} onClick={handleLogout}>Logout</button>
                         </>

@@ -9,6 +9,14 @@ import styles from "./ProfileModal.module.css";
 
 const SERVER_URL = import.meta.env.VITE_API_URL?.replace("/api", "") || "http://localhost:5000";
 
+const getExpiryDate = (plan, planStartDate) => {
+    if (!planStartDate) return null;
+    const start = new Date(planStartDate);
+    let days = 14;
+    if (plan === "premium" || plan === "pro") days = 90;
+    return new Date(start.getTime() + days * 24 * 60 * 60 * 1000);
+};
+
 const ProfileModal = ({ isOpen, onClose }) => {
     const { user, updateLocalUser } = useAuth();
     const [name, setName] = useState(user?.name || "");
@@ -116,6 +124,24 @@ const ProfileModal = ({ isOpen, onClose }) => {
                     id="profile-email"
                     label="Email"
                     value={user?.email || ""}
+                    disabled
+                />
+
+                <div className={styles.divider}>
+                    <span>Subscription Details</span>
+                </div>
+
+                <Input
+                    id="profile-plan"
+                    label="Current Plan"
+                    value={user?.plan ? user.plan.charAt(0).toUpperCase() + user.plan.slice(1) : "Free"}
+                    disabled
+                />
+
+                <Input
+                    id="profile-expiry"
+                    label="Plan Expiry Date"
+                    value={user?.planStartDate ? getExpiryDate(user.plan, user.planStartDate).toLocaleDateString() : ""}
                     disabled
                 />
 
